@@ -1,13 +1,13 @@
 ---
 title: "Sultai Belcher"
-description: "This proactive combo deck rushes to cast an activate a Goblin Charbelcher to end the game."
+description: "This proactive combo deck rushes to cast and activate a Goblin Charbelcher to win the game."
 category: "Timeless"
 tags:
   - Timeless
   - Sultai
   - Combo
 moxfieldUrl: "https://moxfield.com/decks/uRrhiAmM6U-qBJUZCcW95Q"
-image: "https://scryfall.com/card/ddt/57/goblin-charbelcher"
+image: "./assets/decklist.png"
 publishedAt: "2026-03-13"
 updatedAt: "2026-03-13"
 featured: true

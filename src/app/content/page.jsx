@@ -11,7 +11,7 @@ export default function ContentPage() {
       <div className="mb-10">
         <h1 className="font-display text-4xl font-bold text-[#7dd3fc] mb-2">Content</h1>
         <p className="text-slate-400">
-          Deck techs, gameplay videos, and in-depth strategy content. All videos hosted on YouTube.
+          Deck techs, gameplay videos, and in-depth strategy content. All free on YouTube.
         </p>
       </div>
       <ContentGallery items={items} />

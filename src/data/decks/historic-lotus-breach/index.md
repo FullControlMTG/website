@@ -1,5 +1,5 @@
 ---
-title: "Lotus Breach (uh oh breach got banned)"
+title: "Lotus Breach"
 description: "This proactive combo deck untaps Lotus Field for fun and profit."
 category: "Historic"
 tags:

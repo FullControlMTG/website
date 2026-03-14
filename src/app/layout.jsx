@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata = {
   title: 'FullControlMTG',
-  description: 'Competitive Magic: The Gathering strategy, decklists, and gameplay content.',
+  description: 'Magic: The Gathering strategy, decklists, and gameplay content.',
 };
 
 export default function RootLayout({ children }) {
