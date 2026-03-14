@@ -108,7 +108,7 @@ export default async function DeckDetailPage({ params }) {
               <h2 className="font-display text-xl font-semibold text-[#7dd3fc] mb-4">About This Deck</h2>
               <MarkdownContent
                 html={bodyHtml}
-                className="prose prose-invert prose-sm max-w-none text-slate-300 [&_h2]:font-display [&_h2]:text-[#7dd3fc] [&_h3]:text-white [&_a]:text-[#e94560] [&_strong]:text-white"
+                className="prose prose-invert prose-sm max-w-none text-slate-300 [&_h2]:font-display [&_h2]:text-[#7dd3fc] [&_h3]:text-white [&_a]:text-[#4ecdc4] [&_strong]:text-white"
               />
             </section>
           )}

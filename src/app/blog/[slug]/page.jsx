@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params }) {
             [&_h3]:text-white [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3
             [&_p]:leading-relaxed [&_p]:mb-4
             [&_strong]:text-white
-            [&_a]:text-[#e94560] [&_a]:no-underline hover:[&_a]:underline
+            [&_a]:text-[#4ecdc4] [&_a]:no-underline hover:[&_a]:underline
             [&_ul]:my-4 [&_ul]:space-y-1 [&_li]:text-slate-300
             [&_ol]:my-4 [&_ol]:space-y-1
             [&_blockquote]:border-l-2 [&_blockquote]:border-[#7dd3fc]/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-400

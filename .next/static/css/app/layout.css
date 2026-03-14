@@ -171,6 +171,7 @@
     --color-accent-hover: #c73652;
     --color-primary: #7dd3fc;
     --color-primary-light: #bae6fd;
+    --color-link: #4ecdc4;
     --font-family-display: var(--font-display), sans-serif;
     --font-family-sans: var(--font-sans), system-ui, sans-serif;
   }
@@ -2078,9 +2079,9 @@
       grid-template-columns: 1fr 220px;
     }
   }
-  .\[\&_a\]\:text-\[\#e94560\] {
+  .\[\&_a\]\:text-\[\#4ecdc4\] {
     & a {
-      color: #e94560;
+      color: #4ecdc4;
     }
   }
   .\[\&_a\]\:no-underline {
@@ -2272,10 +2273,7 @@
   box-sizing: border-box;
 }
 .mtg-card-ref {
-  color: #7dd3fc;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+  color: var(--color-link);
   cursor: help;
 }
 body {

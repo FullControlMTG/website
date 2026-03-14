@@ -10,6 +10,7 @@
   --color-accent-hover: #c73652;
   --color-primary: #7dd3fc;
   --color-primary-light: #bae6fd;
+  --color-link: #4ecdc4;
 
   --font-family-display: var(--font-display), sans-serif;
   --font-family-sans: var(--font-sans), system-ui, sans-serif;
@@ -20,10 +21,7 @@
 }
 
 .mtg-card-ref {
-  color: #7dd3fc;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+  color: var(--color-link);
   cursor: help;
 }
 
