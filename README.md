@@ -8,7 +8,7 @@ The official website for FullControlMTG — decklists, gameplay content, and str
 - **React 19** — UI
 - **Tailwind CSS v4** — styling via `@tailwindcss/postcss` (no `tailwind.config.js`; custom tokens in `src/app/globals.css` under `@theme`)
 - **js-yaml** — YAML frontmatter parsing
-- **marked** — markdown body → HTML for deck and blog pages
+- **marked** — markdown body → HTML for deck and blog pages, with a custom `[[Card Name]]` extension
 - **@tailwindcss/typography** — `prose` classes for rendered markdown
 
 ## Project Structure
@@ -29,14 +29,16 @@ src/
     ui/                   BlogCard, DeckCard, VideoCard, HeroCarousel,
                           TagBadge, LoadingSpinner,
                           DeckGallery, BlogGallery, ContentGallery (client)
+                          MarkdownContent (client — card hover previews)
     deck/                 CardStack, DecklistViewer
   data/
-    decks/{slug}/         index.md + assets/
+    decks/{slug}/         index.md + assets/ (images mirrored to public/data/)
     blog/{slug}/          index.md + assets/
     content/{slug}/       index.md + assets/
   lib/
     markdown.js           Data layer — fs-based, server-only
     moxfield.js           Moxfield API fetch + parse utilities
+    parseMarkdown.js      marked configured with [[Card Name]] → hover span extension
 public/
   data/                   Local image assets (mirrors src/data/ structure)
 ```
@@ -110,6 +112,16 @@ featured: true
 ---
 ```
 
+## Card References in Markdown
+
+Wrap any card name in double brackets to create a hover preview:
+
+```markdown
+Cast [[Goblin Charbelcher]] and activate it for 7 mana.
+```
+
+On hover, the Scryfall card image appears following the cursor. This works in both deck body text and blog posts. Card names are highlighted in the project link color (`#4ecdc4`).
+
 ## Moxfield Integration
 
 The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side. Because this runs on the Next.js server, there are no CORS restrictions. Moxfield data is cached for 1 hour via ISR (`revalidate = 3600`). The page renders fully from local markdown if the fetch fails.
@@ -123,7 +135,8 @@ Design tokens are in `src/app/globals.css` under `@theme`. Colours of note:
 | `--color-brand-900` | `#0d0d1a` | Page background |
 | `--color-brand-800` | `#1a1a2e` | Card backgrounds |
 | `--color-primary` | `#7dd3fc` | Headings, active states, accents |
-| `--color-accent` | `#e94560` | CTAs, hover states |
+| `--color-accent` | `#e94560` | CTAs, buttons |
+| `--color-link` | `#4ecdc4` | Prose links, card name references |
 
 The display font (`font-display` utility) is **Space Grotesk**, the body font is **Inter**. Both are loaded via `next/font/google` (self-hosted at build time, no Google CDN dependency).
 

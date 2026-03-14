@@ -3,10 +3,10 @@ title: "Lotus Breach (uh oh breach got banned)"
 description: "This proactive combo deck untaps Lotus Field for fun and profit."
 category: "Historic"
 tags:
-  - historic
-  - combo
-  - blue
-  - red
+  - Historic
+  - Combo
+  - Blue
+  - Red
 moxfieldUrl: "https://moxfield.com/decks/6yygz0ROXkOHJxngcGt_Xw"
 image: "./assets/decklist.png"
 publishedAt: "2026-01-12"

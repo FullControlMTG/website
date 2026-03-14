@@ -4,11 +4,11 @@ description: "Landfall is one of Magic's most deceptively deep mechanics. We bre
 author: "FullControlMTG"
 publishedAt: "2025-03-01"
 tags:
-  - strategy
-  - mechanics
-  - landfall
-  - commander
-coverImage: "https://cards.scryfall.io/art_crop/front/a/0/a0d57b75-6cb0-4f8d-9dcc-3aa01c89a41a.jpg"
+  - Strategy
+  - Mechanics
+  - Landfall
+  - Commander
+coverImage: "./assets/asset.png"
 featured: true
 ---
 

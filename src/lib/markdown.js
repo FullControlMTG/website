@@ -20,7 +20,7 @@ const IMAGE_FIELDS = ['image', 'coverImage', 'thumbnail'];
 
 function resolveAsset(type, slug, value) {
   if (typeof value !== 'string' || !value.startsWith('./')) return value;
-  return `/data/${type}/${slug}/assets/${value.slice(2)}`;
+  return `/data/${type}/${slug}/${value.slice(2)}`;
 }
 
 function parseFile(type, slug) {

@@ -6,10 +6,10 @@ youtubeUrl: "https://www.youtube.com/watch?v=-DIUj5wP-fc"
 thumbnail: "https://img.youtube.com/vi/-DIUj5wP-fc/maxresdefault.jpg"
 relatedDeckSlug: "historic-lotus-breach"
 tags:
-  - historic
-  - combo
-  - red
-  - blue
+  - Historic
+  - Combo
+  - Red
+  - Blue
 publishedAt: "2025-02-10"
 featured: true
 ---
