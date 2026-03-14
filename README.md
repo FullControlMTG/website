@@ -130,3 +130,8 @@ npm run dev      # localhost:5173
 npm run build
 npm run preview
 ```
+
+## Deployment
+```bash
+docker compose down && docker system prune && docker compose up -d --build && docker logs -f fullcontrolmtg-website
+```

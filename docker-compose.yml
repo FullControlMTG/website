@@ -4,6 +4,7 @@ networks:
 
 services:
   website:
+    container_name: fullcontrolmtg-website
     build: .
     restart: unless-stopped
     networks:
