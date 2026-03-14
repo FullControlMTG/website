@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /c/Users/runya/Documents/repositories/fullcontrolmtg-website log --oneline)",
+      "Bash(npm create:*)",
+      "Bash(1:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"import\\(''marked''\\).then\\(m => console.log\\(Object.keys\\(m\\)\\)\\)\")",
+      "Bash(node -e \"const pkg = JSON.parse\\(require\\(''fs''\\).readFileSync\\(''node_modules/marked/package.json''\\)\\); console.log\\(pkg.version, pkg.exports\\)\")",
+      "Bash(node -e \"import\\(''marked''\\).then\\(m => { const result = m.marked.parse\\(''# Hello''\\); console.log\\(typeof result, result instanceof Promise, result\\) }\\)\")",
+      "Bash(node -e \"import\\(''react-router-dom''\\).then\\(m => console.log\\(Object.keys\\(m\\).includes\\(''createBrowserRouter''\\), Object.keys\\(m\\).includes\\(''RouterProvider''\\)\\)\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(xargs sed:*)",
+      "Bash(grep -rn \"/\\\\*\\\\|//\" src/ --include=\"*.jsx\" --include=\"*.js\")"
+    ]
+  }
+}

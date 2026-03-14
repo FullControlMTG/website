@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand-900: #0d0d1a;
+  --color-brand-800: #1a1a2e;
+  --color-brand-700: #16213e;
+  --color-brand-600: #0f3460;
+  --color-accent: #e94560;
+  --color-accent-hover: #c73652;
+  --color-primary: #7dd3fc;
+  --color-primary-light: #bae6fd;
+
+  --font-family-display: "Space Grotesk", sans-serif;
+  --font-family-sans: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-brand-900);
+  color: #e2e8f0;
+  font-family: var(--font-family-sans);
+  margin: 0;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-family-display);
+  letter-spacing: -0.01em;
+}
