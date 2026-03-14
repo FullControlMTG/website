@@ -21,6 +21,32 @@ export function extractMoxfieldId(url) {
   return match ? match[1] : null;
 }
 
+export function buildDecklist(data) {
+  function normalizeCard(entry) {
+    const c = entry.card;
+    // Double-faced cards carry image_uris on card_faces[0] rather than the card root
+    const imageUrl =
+      c.image_uris?.normal ??
+      c.card_faces?.[0]?.image_uris?.normal ??
+      null;
+    return {
+      quantity: entry.quantity ?? 1,
+      name: c.name,
+      typeLine: c.type_line ?? '',
+      manaCost: c.mana_cost ?? '',
+      cmc: c.cmc ?? 0,
+      imageUrl,
+    };
+  }
+
+  const boards = data.boards ?? {};
+  return {
+    commanders: Object.values(boards.commanders?.cards ?? {}).map(normalizeCard),
+    mainboard:  Object.values(boards.mainboard?.cards  ?? {}).map(normalizeCard),
+    sideboard:  Object.values(boards.sideboard?.cards  ?? {}).map(normalizeCard),
+  };
+}
+
 export function parseMoxfieldDeck(data) {
   const mainboard = data.boards?.mainboard?.cards ?? {};
   const commanders = data.boards?.commanders?.cards ?? {};

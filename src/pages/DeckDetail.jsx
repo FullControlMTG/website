@@ -2,7 +2,8 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import { getDeckBySlug } from '../utils/markdown';
-import { fetchMoxfieldDeck, parseMoxfieldDeck } from '../api/moxfield';
+import { fetchMoxfieldDeck, parseMoxfieldDeck, buildDecklist } from '../api/moxfield';
+import DecklistViewer from '../components/deck/DecklistViewer';
 import TagBadge from '../components/ui/TagBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -11,6 +12,7 @@ export default function DeckDetail() {
   const deck = getDeckBySlug(slug);
 
   const [moxfield, setMoxfield] = useState(null);
+  const [decklist, setDecklist] = useState(null);
   const [moxLoading, setMoxLoading] = useState(false);
   const [moxError, setMoxError] = useState(null);
 
@@ -18,7 +20,10 @@ export default function DeckDetail() {
     if (!deck?.frontmatter.moxfieldId) return;
     setMoxLoading(true);
     fetchMoxfieldDeck(deck.frontmatter.moxfieldId)
-      .then((data) => setMoxfield(parseMoxfieldDeck(data)))
+      .then((data) => {
+        setMoxfield(parseMoxfieldDeck(data));
+        setDecklist(buildDecklist(data));
+      })
       .catch((err) => setMoxError(err.message))
       .finally(() => setMoxLoading(false));
   }, [deck?.frontmatter.moxfieldId]);
@@ -29,7 +34,7 @@ export default function DeckDetail() {
   const bodyHtml = deck.body?.trim() ? marked.parse(deck.body) : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
+    <div className="mx-auto max-w-7xl px-6 py-12">
       <nav className="mb-6 text-sm text-slate-500">
         <Link to="/decks" className="hover:text-slate-300 transition-colors">Decklists</Link>
         <span className="mx-2">/</span>
@@ -58,36 +63,32 @@ export default function DeckDetail() {
           )}
           <p className="text-slate-300 max-w-2xl mb-6 leading-relaxed">{fm.description}</p>
 
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={fm.moxfieldUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#e94560] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#c73652] transition-colors"
-            >
-              View on Moxfield
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-          </div>
+          <a
+            href={fm.moxfieldUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#e94560] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#c73652] transition-colors"
+          >
+            View on Moxfield
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="grid gap-8 lg:grid-cols-[1fr_220px]">
+        <div className="space-y-12 min-w-0">
           {fm.moxfieldId && (
             <section>
-              <h2 className="font-display text-xl font-semibold text-[#7dd3fc] mb-4">Decklist</h2>
-              <div className="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a2e]">
-                <iframe
-                  src={`https://www.moxfield.com/decks/${fm.moxfieldId}/embed`}
-                  title={`${fm.title} decklist`}
-                  className="w-full"
-                  style={{ height: '600px', border: 'none' }}
-                  loading="lazy"
-                />
-              </div>
+              <h2 className="font-display text-xl font-semibold text-[#7dd3fc] mb-6">Decklist</h2>
+              {moxLoading && <LoadingSpinner label="Loading decklist..." />}
+              {moxError && (
+                <p className="text-sm text-slate-500">
+                  Could not load decklist from Moxfield — {moxError}
+                </p>
+              )}
+              {decklist && <DecklistViewer decklist={decklist} />}
             </section>
           )}
 
@@ -105,11 +106,9 @@ export default function DeckDetail() {
         <aside className="space-y-6">
           <div className="rounded-xl border border-white/10 bg-[#1a1a2e] p-5">
             <h3 className="font-semibold text-white mb-4">Deck Info</h3>
-            {moxLoading && <LoadingSpinner label="Loading Moxfield data..." />}
+            {moxLoading && <LoadingSpinner label="Loading..." />}
             {moxError && (
-              <p className="text-xs text-slate-500">
-                Moxfield data unavailable ({moxError})
-              </p>
+              <p className="text-xs text-slate-500">Moxfield data unavailable</p>
             )}
             {moxfield && (
               <dl className="space-y-2 text-sm">

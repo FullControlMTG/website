@@ -13,7 +13,8 @@
       "Bash(node -e \"import\\(''react-router-dom''\\).then\\(m => console.log\\(Object.keys\\(m\\).includes\\(''createBrowserRouter''\\), Object.keys\\(m\\).includes\\(''RouterProvider''\\)\\)\\)\")",
       "Bash(node -e \":*)",
       "Bash(xargs sed:*)",
-      "Bash(grep -rn \"/\\\\*\\\\|//\" src/ --include=\"*.jsx\" --include=\"*.js\")"
+      "Bash(grep -rn \"/\\\\*\\\\|//\" src/ --include=\"*.jsx\" --include=\"*.js\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api2.moxfield.com/v3/decks/all/uRrhiAmM6U-qBJUZCcW95Q\" -H \"Accept: application/json\")"
     ]
   }
 }
