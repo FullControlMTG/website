@@ -1,0 +1,17 @@
+networks:
+  traefik:
+    external: true
+
+services:
+  website:
+    build: .
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fullcontrolmtg.rule=Host(`fullcontrol.whitney.rip`)"
+      - "traefik.http.routers.fullcontrolmtg.entrypoints=websecure"
+      - "traefik.http.routers.fullcontrolmtg.tls=true"
+      - "traefik.http.routers.fullcontrolmtg.tls.certresolver=letsencrypt"
+      - "traefik.http.services.fullcontrolmtg.loadbalancer.server.port=80"
