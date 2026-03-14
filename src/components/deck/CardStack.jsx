@@ -1,3 +1,5 @@
+'use client';
+
 const STRIP_HEIGHT = 52;
 
 function CardItem({ card, index, total }) {
@@ -40,13 +42,13 @@ function CardItem({ card, index, total }) {
         </div>
       )}
 
-      <div className="absolute top-2 left-2 flex items-center gap-1 pointer-events-none">
-        {card.quantity > 1 && (
+      {card.quantity > 1 && (
+        <div className="absolute top-2 left-2 pointer-events-none">
           <span className="rounded-full bg-[#0d0d1a]/80 px-1.5 py-0.5 text-[10px] font-bold text-[#7dd3fc]">
             ×{card.quantity}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="absolute inset-x-0 bottom-0 flex items-end p-2 bg-gradient-to-t from-black/80 to-transparent rounded-b-[6px] pointer-events-none">
         <span className="text-[10px] text-white leading-tight truncate">{card.name}</span>
@@ -58,12 +60,15 @@ function CardItem({ card, index, total }) {
 export default function CardStack({ cards, label }) {
   if (!cards?.length) return null;
 
-  const totalHeight = (cards.length - 1) * STRIP_HEIGHT + (cards.length > 0 ? 310 : 0);
+  const totalHeight = (cards.length - 1) * STRIP_HEIGHT + 310;
 
   return (
     <div className="flex flex-col gap-2">
       <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-        {label} <span className="text-slate-500 font-normal">({cards.reduce((s, c) => s + c.quantity, 0)})</span>
+        {label}{' '}
+        <span className="text-slate-500 font-normal">
+          ({cards.reduce((s, c) => s + c.quantity, 0)})
+        </span>
       </h4>
       <div className="relative w-36" style={{ height: totalHeight }}>
         {cards.map((card, i) => (

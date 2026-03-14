@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import TagBadge from './TagBadge';
 
 export default function VideoCard({ item }) {
@@ -49,14 +49,14 @@ export default function VideoCard({ item }) {
         <div className="flex items-center justify-between">
           {fm.tags?.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {fm.tags.slice(0, 3).map((tag) => (
+              {fm.tags.slice(0, 7).map((tag) => (
                 <TagBadge key={tag} tag={tag} />
               ))}
             </div>
           )}
           {fm.relatedDeckSlug && (
             <Link
-              to={`/decks/${fm.relatedDeckSlug}`}
+              href={`/decks/${fm.relatedDeckSlug}`}
               className="text-xs text-[#7dd3fc] hover:text-[#bae6fd] transition-colors shrink-0 ml-2"
             >
               View Deck →

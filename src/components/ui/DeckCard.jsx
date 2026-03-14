@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import TagBadge from './TagBadge';
 
 export default function DeckCard({ deck }) {
@@ -6,7 +6,7 @@ export default function DeckCard({ deck }) {
 
   return (
     <Link
-      to={`/decks/${slug}`}
+      href={`/decks/${slug}`}
       className="group block rounded-xl overflow-hidden bg-[#1a1a2e] border border-white/10 hover:border-[#7dd3fc]/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
     >
       <div className="relative h-48 overflow-hidden bg-[#0f3460]">

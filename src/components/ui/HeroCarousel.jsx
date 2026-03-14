@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 export default function HeroCarousel({ slides }) {
   const [current, setCurrent] = useState(0);
@@ -18,6 +20,13 @@ export default function HeroCarousel({ slides }) {
   if (!slides.length) return null;
 
   const slide = slides[current];
+  const isExternal = slide.href?.startsWith('http');
+
+  const ctaProps = isExternal
+    ? { href: slide.href, target: '_blank', rel: 'noopener noreferrer' }
+    : { href: slide.href };
+
+  const CTA = isExternal ? 'a' : Link;
 
   return (
     <div className="relative h-[500px] overflow-hidden bg-[#1a1a2e]">
@@ -43,12 +52,12 @@ export default function HeroCarousel({ slides }) {
           <p className="text-slate-300 text-base md:text-lg mb-6 leading-relaxed">
             {slide.description}
           </p>
-          <Link
-            to={slide.href}
+          <CTA
+            {...ctaProps}
             className="inline-block rounded-lg bg-[#e94560] px-6 py-3 text-sm font-semibold text-white hover:bg-[#c73652] transition-colors"
           >
             {slide.cta ?? 'View Now'}
-          </Link>
+          </CTA>
         </div>
       </div>
 

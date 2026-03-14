@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "The official FullControlMTG website, showcasing decklists, deck showcases, and other FullControlMTG related content.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "repository": {
     "type": "git",
@@ -14,23 +14,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/FullControlMTG/website/issues"
   },
   "homepage": "https://github.com/FullControlMTG/website#readme",
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
-    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
     "marked": "^17.0.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.2.1",
-    "@vitejs/plugin-react": "^4.7.0",
-    "tailwindcss": "^4.2.1",
-    "vite": "^6.4.1"
+    "@tailwindcss/postcss": "^4",
+    "postcss": "^8",
+    "tailwindcss": "^4"
   }
 }

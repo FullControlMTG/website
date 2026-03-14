@@ -16,7 +16,7 @@ featured: true
 
 Landfall is a triggered ability that fires whenever a land enters the battlefield under your control. Simple enough — but the interactions that stem from it are anything but.
 
-The key word is **triggered**. Landfall abilities go on the stack after the land resolves, which means they use the game state *at the time they resolve*, not at the time they triggered. This distinction matters more than most players realize.
+The key word is **triggered**. Landfall abilities go on [[Lotus Field]] the stack after the land resolves, which means they use the game state *at the time they resolve*, not at the time they triggered. This distinction matters more than most players realize.
 
 ## Trigger Timing
 

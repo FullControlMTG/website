@@ -4,10 +4,10 @@ The official website for FullControlMTG — decklists, gameplay content, and str
 
 ## Stack
 
-- **Vite + React** — build tooling and UI
-- **React Router v7** — client-side routing
-- **Tailwind CSS v4** — styling via `@tailwindcss/vite` plugin (no `tailwind.config.js` needed; custom tokens live in `src/index.css` under `@theme`)
-- **js-yaml** — YAML frontmatter parsing (used directly rather than gray-matter, which requires Node's `Buffer` in the browser)
+- **Next.js 15** — App Router, Server Components, ISR
+- **React 19** — UI
+- **Tailwind CSS v4** — styling via `@tailwindcss/postcss` (no `tailwind.config.js`; custom tokens in `src/app/globals.css` under `@theme`)
+- **js-yaml** — YAML frontmatter parsing
 - **marked** — markdown body → HTML for deck and blog pages
 - **@tailwindcss/typography** — `prose` classes for rendered markdown
 
@@ -15,30 +15,41 @@ The official website for FullControlMTG — decklists, gameplay content, and str
 
 ```
 src/
-  api/
-    moxfield.js         Moxfield API utilities (fetch, parse, extract ID)
+  app/                    Next.js App Router pages and layout
+    layout.jsx            Root layout (Header, Footer, fonts)
+    globals.css           Global styles and @theme tokens
+    page.jsx              Landing page
+    decks/                Decklists gallery + [slug] detail
+    blog/                 Blog gallery + [slug] post
+    content/              Video gallery
+    products/             Products (placeholder)
+    about/ support/ contact/
   components/
-    layout/             Header, Footer, Layout wrapper
-    ui/                 BlogCard, DeckCard, VideoCard, HeroCarousel,
-                        TagBadge, LoadingSpinner
+    layout/               Header, Footer
+    ui/                   BlogCard, DeckCard, VideoCard, HeroCarousel,
+                          TagBadge, LoadingSpinner,
+                          DeckGallery, BlogGallery, ContentGallery (client)
+    deck/                 CardStack, DecklistViewer
   data/
-    decks/{slug}/       index.md + assets/
-    blog/{slug}/        index.md + assets/
-    content/{slug}/     index.md + assets/
-  pages/                One file per route
-  utils/
-    markdown.js         Data layer — glob imports, frontmatter parsing,
-                        local asset resolution, all query functions
-  index.css             Global styles and @theme tokens
+    decks/{slug}/         index.md + assets/
+    blog/{slug}/          index.md + assets/
+    content/{slug}/       index.md + assets/
+  lib/
+    markdown.js           Data layer — fs-based, server-only
+    moxfield.js           Moxfield API fetch + parse utilities
+public/
+  data/                   Local image assets (mirrors src/data/ structure)
 ```
 
 ## Data Layer
 
-All content is static markdown. No CMS, no backend.
+All content is markdown files. No CMS, no backend.
 
-`src/utils/markdown.js` uses Vite's `import.meta.glob` with `eager: true` to load every `index.md` at build time. Frontmatter is parsed with js-yaml. The slug for each item is its **folder name**, not the filename (which is always `index.md`).
+`src/lib/markdown.js` reads every `index.md` at request time using Node's `fs` module (server-only). Frontmatter is parsed with js-yaml. The slug for each item is its **folder name**, not the filename (which is always `index.md`).
 
-Local image assets (`./assets/image.jpg`) are resolved by a parallel asset glob that lets Vite process and content-hash them. External URLs (Scryfall, YouTube) pass through unchanged.
+Local image assets in frontmatter (`./assets/image.jpg`) resolve to `/data/{type}/{slug}/assets/filename.jpg`. Place those files under `public/data/` with the matching path — e.g. `public/data/decks/my-deck/assets/cover.jpg`.
+
+External URLs (Scryfall, YouTube) pass through unchanged.
 
 ## Adding Content
 
@@ -56,12 +67,8 @@ commander: "Commander Name"    # EDH only
 tags:
   - tag-one
   - tag-two
-moxfieldId: "aBcDeFgHiJkLmN"  # ID segment from the Moxfield URL
-moxfieldUrl: "https://moxfield.com/decks/aBcDeFgHiJkLmN"
-image: "./assets/cover.jpg"    # or a Scryfall URL
-colorIdentity:
-  - U
-  - G
+moxfieldUrl: "https://moxfield.com/decks/aBcDeFgHiJkLmN"  # ID is derived from this
+image: "./assets/cover.jpg"    # or a Scryfall art URL
 publishedAt: "2025-01-15"
 updatedAt: "2025-03-01"        # optional
 featured: true                 # shows in hero carousel and homepage
@@ -69,7 +76,7 @@ featured: true                 # shows in hero carousel and homepage
 ```
 
 3. Optionally add a markdown body below the frontmatter — rendered as "About This Deck" on the detail page.
-4. Drop any images in `assets/`.
+4. Drop images in `public/data/decks/{slug}/assets/`.
 
 ### Blog Post
 
@@ -85,8 +92,6 @@ coverImage: "./assets/cover.jpg"  # or external URL
 featured: true
 ---
 ```
-
-Write the post body in markdown below the frontmatter.
 
 ### Content (YouTube)
 
@@ -107,11 +112,11 @@ featured: true
 
 ## Moxfield Integration
 
-The deck detail page embeds a Moxfield iframe and attempts to fetch live stats (card count, views, likes) from the unofficial Moxfield API (`api2.moxfield.com/v3`). CORS restrictions may block this in production — the page renders fully from local markdown if the request fails.
+The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side. Because this runs on the Next.js server, there are no CORS restrictions. Moxfield data is cached for 1 hour via ISR (`revalidate = 3600`). The page renders fully from local markdown if the fetch fails.
 
 ## Theme
 
-Design tokens are in `src/index.css` under `@theme`. Colours of note:
+Design tokens are in `src/app/globals.css` under `@theme`. Colours of note:
 
 | Token | Value | Used for |
 |---|---|---|
@@ -120,18 +125,19 @@ Design tokens are in `src/index.css` under `@theme`. Colours of note:
 | `--color-primary` | `#7dd3fc` | Headings, active states, accents |
 | `--color-accent` | `#e94560` | CTAs, hover states |
 
-The display font (`font-display` utility) is **Space Grotesk**, loaded from Google Fonts. Body text uses **Inter**.
+The display font (`font-display` utility) is **Space Grotesk**, the body font is **Inter**. Both are loaded via `next/font/google` (self-hosted at build time, no Google CDN dependency).
 
 ## Development
 
 ```bash
 npm install
-npm run dev      # localhost:5173
+npm run dev      # localhost:3000
 npm run build
-npm run preview
+npm start        # serve the production build locally
 ```
 
 ## Deployment
+
 ```bash
 docker compose down && docker system prune && docker compose up -d --build && docker logs -f fullcontrolmtg-website
 ```

@@ -14,7 +14,17 @@
       "Bash(node -e \":*)",
       "Bash(xargs sed:*)",
       "Bash(grep -rn \"/\\\\*\\\\|//\" src/ --include=\"*.jsx\" --include=\"*.js\")",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api2.moxfield.com/v3/decks/all/uRrhiAmM6U-qBJUZCcW95Q\" -H \"Accept: application/json\")"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api2.moxfield.com/v3/decks/all/uRrhiAmM6U-qBJUZCcW95Q\" -H \"Accept: application/json\")",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(rm -f vite.config.js nginx.conf index.html src/App.jsx src/main.jsx src/index.css)",
+      "Bash(rm -rf src/pages src/utils src/api src/components/layout/Layout.jsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api2.moxfield.com/v3/decks/all/uRrhiAmM6U-qBJUZCcW95Q\" -H \"Accept: application/json\" -H \"User-Agent: Mozilla/5.0 \\(X11; Linux x86_64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Referer: https://www.moxfield.com/\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://api2.moxfield.com/v3/decks/all/uRrhiAmM6U-qBJUZCcW95Q\" -H \"Accept: application/json\" --http1.1 -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Referer: https://www.moxfield.com/\")"
     ]
   }
 }
