@@ -1,8 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/decks/[slug]/page": "app/decks/[slug]/page.js",
-  "/content/page": "app/content/page.js",
-  "/blog/page": "app/blog/page.js",
-  "/blog/[slug]/page": "app/blog/[slug]/page.js",
-  "/decks/page": "app/decks/page.js"
-}
