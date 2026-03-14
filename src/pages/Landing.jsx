@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import HeroCarousel from '../components/ui/HeroCarousel';
 import DeckCard from '../components/ui/DeckCard';
 import VideoCard from '../components/ui/VideoCard';
-import { getFeaturedDecks, getFeaturedContent } from '../utils/markdown';
+import BlogCard from '../components/ui/BlogCard';
+import { getFeaturedDecks, getFeaturedContent, getFeaturedPosts } from '../utils/markdown';
 
 const featuredDecks = getFeaturedDecks();
 const featuredContent = getFeaturedContent();
+const featuredPosts = getFeaturedPosts();
 
 const heroSlides = [
   ...featuredDecks.map((d) => ({
@@ -46,6 +48,12 @@ export default function Landing() {
                 title: 'Content',
                 description: 'Deck techs, gameplay videos, and in-depth strategy guides on YouTube.',
                 icon: '▶',
+              },
+              {
+                to: '/blog',
+                title: 'Blog',
+                description: 'Strategy guides, mechanics deep-dives, and card analysis articles.',
+                icon: '✍',
               },
               {
                 to: '/products',
@@ -99,6 +107,22 @@ export default function Landing() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {featuredContent.map((item) => (
                 <VideoCard key={item.slug} item={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {featuredPosts.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-2xl font-bold text-[#7dd3fc]">From the Blog</h2>
+              <Link to="/blog" className="text-sm text-slate-400 hover:text-white transition-colors">
+                View all →
+              </Link>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredPosts.map((post) => (
+                <BlogCard key={post.slug} post={post} />
               ))}
             </div>
           </section>

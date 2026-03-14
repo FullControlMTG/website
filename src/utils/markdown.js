@@ -12,6 +12,12 @@ const contentFiles = import.meta.glob('../data/content/*.md', {
   eager: true,
 });
 
+const blogFiles = import.meta.glob('../data/blog/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
 // js-yaml used directly instead of gray-matter to avoid its Node.js Buffer dependency in the browser.
 function parseFrontmatter(rawContent) {
   const match = rawContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
@@ -62,4 +68,22 @@ export function getFeaturedDecks() {
 
 export function getFeaturedContent() {
   return getAllContent().filter((c) => c.frontmatter.featured);
+}
+
+export function getAllPosts() {
+  return Object.entries(blogFiles)
+    .map(([path, raw]) => parseFile(path, raw))
+    .sort(
+      (a, b) =>
+        new Date(b.frontmatter.publishedAt) -
+        new Date(a.frontmatter.publishedAt),
+    );
+}
+
+export function getPostBySlug(slug) {
+  return getAllPosts().find((post) => post.slug === slug) ?? null;
+}
+
+export function getFeaturedPosts() {
+  return getAllPosts().filter((p) => p.frontmatter.featured);
 }

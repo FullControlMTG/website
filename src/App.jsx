@@ -8,6 +8,8 @@ import Content from './pages/Content';
 import About from './pages/About';
 import Support from './pages/Support';
 import Contact from './pages/Contact';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +20,8 @@ const router = createBrowserRouter([
       { path: '/decks',         element: <Decks /> },
       { path: '/decks/:slug',   element: <DeckDetail /> },
       { path: '/content',       element: <Content /> },
+      { path: '/blog',          element: <Blog /> },
+      { path: '/blog/:slug',    element: <BlogPost /> },
       { path: '/about',         element: <About /> },
       { path: '/support',       element: <Support /> },
       { path: '/contact',       element: <Contact /> },
