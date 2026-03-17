@@ -16,5 +16,5 @@ services:
       - "traefik.http.routers.fullcontrolmtg.rule=Host(`fullcontrol.whitney.rip`)"
       - "traefik.http.routers.fullcontrolmtg.entrypoints=websecure"
       - "traefik.http.routers.fullcontrolmtg.tls=true"
-      - "traefik.http.routers.fullcontrolmtg.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.fullcontrolmtg.tls.certresolver=lets-encrypt"
       - "traefik.http.services.fullcontrolmtg.loadbalancer.server.port=3000"
