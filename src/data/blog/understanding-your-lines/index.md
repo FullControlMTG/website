@@ -30,7 +30,7 @@ Proactive protection — [[Thoughtseize]], [[Duress]], [[Inquisition of Kozilek]
 
 Reactive protection — [[Veil of Summer]], [[Flusterstorm]], [[Pact of Negation]] — poses the question of if your opponent has more interaction than you have protection. The matchup might be the deciding factor on if this is feasible - for example, this is riskier against draw-go control that is known to draw cards on the end step regularly than against a midrange shell splashing blue or black for interaction. Both have their place, and the best protection suites include both.
 
-**When not to protect.** Protection is often wrong when the opponent is on a gameplan that "turns the corner". If the aggro deck is nearing their kill range, or the prison deck's lock piece could be coming in a turn or so, it may be time to give it your best shot. Getting to this point is a sign that the proactive gameplan has failed. Maybe your initial attempt was stopped, maybe you drew poorly. Identifying the last chance before their killing blow can land and building to your best attempt at that time is in a general sense, the most you can do. 
+**When not to protect:** Protection is often wrong when the opponent is on a gameplan that "turns the corner". If the aggro deck is nearing their kill range, or the prison deck's lock piece could be coming in a turn or so, it may be time to give it your best shot. Getting to this point is a sign that the proactive gameplan has failed. Maybe your initial attempt was stopped, maybe you drew poorly. Identifying the last chance before their killing blow can land and building to your best attempt at that time is in a general sense, the most you can do. 
 
 **Flashy Bait Plays:** Somewhere between proactive and reactive sits the deliberate bait. Cast a tutor you don't strictly need to resolve — you need the opponent to spend their counter on something real-looking but non-lethal. You'll often rely on format knowledge to entrap players. For someone playing against Omnishow, seeing a [[Borne Upon a Wind]] hit the stack might be enough to warrant firing off the last counterspell, should their opponent have enough open mana that this play would open up a sufficient amount of lines for them. 
 
@@ -41,7 +41,7 @@ Knowing *that* you're assembling a combo isn't enough. Great pilots know every r
 **Map your A+B combos first.** Every combo deck has a primary win condition requiring two or more specific pieces. Identify them explicitly. For Belcher:
 
 - [[Goblin Charbelcher]] + 7 mana (cast + activate)
-- [[Beseech the Mirror]] (Bargain) → finds Belcher → 4 mana to activate
+- [[Beseech the Mirror]] (Bargain) → finds Belcher → 3 mana to activate
 - [[Beseech the Mirror]] → [[Irencrag Feat]] → cast and activate Belcher in the same turn (1BBB + Bargain cost)
 - [[Channel]] → [[Karn, the Great Creator]] → reveal [[Goblin Charbelcher]] → activation (11 life)
 
