@@ -1,12 +1,12 @@
 ---
-title: "Eldrazi Stompy - Dech Tech"
-description: "A deck tech and gameplay breakdown of the Historic Eldrazi Stompy list."
-youtubeUrl: "https://www.youtube.com/watch?v=S8i-PPnLoE0"
-relatedDeckSlug: "oops-all-spells"
+title: "Angel Tribal - Dech Tech"
+description: "A deck tech and gameplay breakdown of the Historic Angel Tribal deck."
+youtubeUrl: "https://www.youtube.com/watch?v=pL_pwUCmqWE"
+relatedDeckSlug: "angel-tribal"
 tags:
   - Historic
   - Aggro
-  - Colorless
-publishedAt: "2025-04-16"
+  - White
+publishedAt: "2024-09-16"
 featured: true
 ---

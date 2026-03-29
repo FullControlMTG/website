@@ -4,8 +4,10 @@ description: "This proactive combo deck rushes to cast and activate a Goblin Cha
 category: "Timeless"
 tags:
   - Timeless
-  - Sultai
   - Combo
+  - Blue
+  - Black
+  - Green
 moxfieldUrl: "https://moxfield.com/decks/uRrhiAmM6U-qBJUZCcW95Q"
 image: "./assets/decklist.png"
 publishedAt: "2026-03-13"
