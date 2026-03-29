@@ -34,6 +34,17 @@ function parseFile(type, slug) {
     }
   }
 
+  if (type === 'content' && frontmatter.youtubeUrl && !frontmatter.youtubeId) {
+    const match = frontmatter.youtubeUrl.match(/[?&]v=([^&]+)/);
+    if (match) {
+      frontmatter.youtubeId = match[1];
+    }
+  }
+
+  if (type === 'content' && frontmatter.youtubeId && !frontmatter.thumbnail) {
+    frontmatter.thumbnail = `https://img.youtube.com/vi/${frontmatter.youtubeId}/maxresdefault.jpg`;
+  }
+
   return { slug, frontmatter, body };
 }
 
