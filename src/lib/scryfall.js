@@ -80,11 +80,21 @@ async function resolveBatch(names) {
     body: JSON.stringify({ identifiers: names.map((name) => ({ name })) }),
   });
 
+  // Map results back to the input name, not Scryfall's card.name.
+  // Split cards are returned as "Front // Back" but queried as "Front".
+  const inputIndex = {};
+  for (const name of names) inputIndex[name.toLowerCase()] = name;
+
   const found = {};
   for (const card of data?.data ?? []) {
     const url = extractImageUrl(card);
-    if (url) found[card.name] = url;
+    if (!url) continue;
+    const key =
+      inputIndex[card.name.toLowerCase()] ??
+      inputIndex[card.name.split(' // ')[0].toLowerCase()];
+    if (key) found[key] = url;
   }
+
   const notFound = (data?.not_found ?? []).map((id) => id.name).filter(Boolean);
   return { found, notFound };
 }

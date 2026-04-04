@@ -117,15 +117,27 @@ async function resolveBatch(names) {
     body: JSON.stringify({ identifiers }),
   });
 
+  // Build a reverse index from lowercase deck-name → original input name so we
+  // can map Scryfall's returned card.name back to whatever we queried.
+  // Split cards are returned as "Front // Back" but queried as "Front", so we
+  // also index the front-face portion of any split name.
+  const inputIndex = {};
+  for (const name of names) {
+    inputIndex[name.toLowerCase()] = name;
+  }
+
   const found = {};
   for (const card of data?.data ?? []) {
     const url = extractImageUrl(card);
-    if (url) found[card.name] = url;
+    if (!url) continue;
+    // Try exact match, then front-face of split cards ("A // B" → "A").
+    const key =
+      inputIndex[card.name.toLowerCase()] ??
+      inputIndex[card.name.split(' // ')[0].toLowerCase()];
+    if (key) found[key] = url;
   }
 
-  // Scryfall returns not_found with the original identifier objects.
   const notFound = (data?.not_found ?? []).map((id) => id.name).filter(Boolean);
-
   return { found, notFound };
 }
 
