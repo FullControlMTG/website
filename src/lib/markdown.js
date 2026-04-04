@@ -96,3 +96,9 @@ export function getFeaturedPosts() {
 export function getFeaturedContent() {
   return getAllContent().filter((c) => c.frontmatter.featured);
 }
+
+export function readDeckTxt(slug) {
+  const filePath = path.join(DATA_DIR, 'decks', slug, 'deck.txt');
+  if (!fs.existsSync(filePath)) return null;
+  return fs.readFileSync(filePath, 'utf-8');
+}

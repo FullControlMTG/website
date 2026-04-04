@@ -1,0 +1,29 @@
+Deck
+4 Seething Song (MRD) 104
+4 Chrome Mox (SPG) 0
+4 Manamorphose (SPG) 0
+4 Birgi, God of Storytelling (KHM) 123
+4 Ruby Medallion (MH3) 295
+3 Ral, Monsoon Mage (MH3) 247
+1 Storm of Memories (TLE) 126
+4 Highway Robbery (OTJ) 129
+3 Fire-Brained Scheme (OM1) 79
+4 Glimpse the Impossible (MH3) 124
+4 Wrenn's Resolve (MOM) 173
+1 Grapeshot (STA) 39
+1 Past in Flames (SIS) 43
+4 Great Furnace (MRD) 282
+1 Wish (AFR) 166
+4 Barbarian Ring (MH3) 299
+2 Shatterskull Smashing (ZNR) 161
+2 Valakut Awakening (ZNR) 174
+6 Mountain (MID) 274
+
+Sideboard
+1 Grapeshot (STA) 39
+1 Galvanic Relay (MH2) 127
+1 Empty the Warrens (DMR) 118
+1 Storm of Memories (TLE) 126
+1 Pact of Negation (AKR) 73
+1 Meltdown (MH3) 282
+1 Wear Down (BLB) 203

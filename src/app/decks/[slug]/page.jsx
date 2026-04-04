@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getAllDecks, getDeckBySlug } from '@/lib/markdown';
+import { getAllDecks, getDeckBySlug, readDeckTxt } from '@/lib/markdown';
 import { parseMarkdown } from '@/lib/parseMarkdown';
 import MarkdownContent from '@/components/ui/MarkdownContent';
 import { extractMoxfieldId, fetchMoxfieldDeck, parseMoxfieldDeck, buildDecklist } from '@/lib/moxfield';
+import { parseDeckTxt } from '@/lib/parseDeckTxt';
+import { enrichWithScryfallImages } from '@/lib/scryfall';
 import DecklistViewer from '@/components/deck/DecklistViewer';
 import TagBadge from '@/components/ui/TagBadge';
 
@@ -38,7 +40,15 @@ export default async function DeckDetailPage({ params }) {
       moxfield = parseMoxfieldDeck(data);
       decklist = buildDecklist(data);
     } catch {
-      // Moxfield unavailable — render without live data
+      // Moxfield unavailable — fall through to local deck.txt
+    }
+  }
+
+  // Fall back to a local deck.txt if Moxfield didn't supply a decklist
+  if (!decklist) {
+    const deckTxt = readDeckTxt(slug);
+    if (deckTxt) {
+      decklist = await enrichWithScryfallImages(parseDeckTxt(deckTxt));
     }
   }
 
@@ -87,7 +97,7 @@ export default async function DeckDetailPage({ params }) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_220px]">
         <div className="space-y-12 min-w-0">
-          {moxfieldId && (
+          {(moxfieldId || decklist) && (
             <section>
               <h2 className="font-display text-xl font-semibold text-[#7dd3fc] mb-6">Decklist</h2>
               {decklist ? (

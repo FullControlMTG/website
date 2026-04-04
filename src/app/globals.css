@@ -16,6 +16,15 @@
   --font-family-sans: var(--font-sans), system-ui, sans-serif;
 }
 
+/* Deck card sizing — computed dynamically by DeckSpread.jsx and injected as
+   inline CSS variables on the container. These :root values are only used
+   server-side before hydration. */
+:root {
+  --deck-card-w: 176px;
+  --deck-card-h: 246px;   /* 176 × 88/63 */
+  --deck-strip-h: 37px;   /* 246 × 0.15 — 85% overlap */
+}
+
 * {
   box-sizing: border-box;
 }
