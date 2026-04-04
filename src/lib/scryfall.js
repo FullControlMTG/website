@@ -15,6 +15,8 @@ function extractImageUrl(card) {
 
 async function fetchCardByName(name) {
   // Try exact match first, fall back to fuzzy for alternate names / typos.
+  // Only cache successful responses — failures use no-store so a retry on the
+  // next request can succeed rather than serving a cached 404.
   const exactUrl =
     `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ exact: name });
   const res = await fetch(exactUrl, {
@@ -27,7 +29,8 @@ async function fetchCardByName(name) {
     `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ fuzzy: name });
   const fuzzyRes = await fetch(fuzzyUrl, {
     headers: HEADERS,
-    next: { revalidate: 86400 },
+    cache: res.status === 404 ? 'no-store' : undefined,
+    next: res.status === 404 ? undefined : { revalidate: 86400 },
   });
   return fuzzyRes.ok ? fuzzyRes.json() : null;
 }
@@ -57,19 +60,21 @@ export async function enrichWithScryfallImages(decklist) {
     }
   }
 
-  // Fetch all cards in parallel — GET requests are cached by Next.js fetch.
-  const entries = await Promise.all(
-    uniqueNames.map(async (name) => {
-      try {
-        const data = await fetchCardByName(name);
-        return [name, extractImageUrl(data)];
-      } catch {
-        return [name, null];
-      }
-    })
-  );
-
-  const imageMap = Object.fromEntries(entries.filter(([, url]) => url !== null));
+  // Fetch cards sequentially with a small delay to respect Scryfall's 10 req/s
+  // rate limit. Parallel requests during `next build` would exceed it and cause
+  // some cards to silently fail and get baked into the static HTML with no image.
+  // Results are cached by Next.js fetch for 24h so this delay only applies once.
+  const imageMap = {};
+  for (const name of uniqueNames) {
+    try {
+      const data = await fetchCardByName(name);
+      const url = extractImageUrl(data);
+      if (url) imageMap[name] = url;
+    } catch {
+      // leave this card without an image
+    }
+    await new Promise((r) => setTimeout(r, 120));
+  }
 
   for (const card of allCards) {
     if (!card.imageUrl && imageMap[card.name]) {
