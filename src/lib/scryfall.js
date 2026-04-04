@@ -4,19 +4,16 @@ import path from 'path';
 // Server-side Scryfall enrichment with a persistent disk cache.
 //
 // Cache lives at .cache/scryfall-cards.json relative to process.cwd().
-//   - Dev:  {project root}/.cache/scryfall-cards.json
-//   - Prod: /app/.cache/scryfall-cards.json  (Docker volume-mounted)
-//
-// Cards missing from the disk cache are fetched in parallel. Each individual
-// request retries on transient errors (429, 5xx) using exponential backoff,
-// respecting Scryfall's Retry-After header when present. 404s skip to the
-// fuzzy fallback immediately; persistent failures are left without an image.
+// Cards missing from the disk cache are resolved via POST /cards/collection
+// (up to 75 per request) with exponential backoff on failure.
+// Unmatched cards fall back to GET /cards/named?fuzzy=.
 
-const SCRYFALL_BASE = 'https://api.scryfall.com';
-const HEADERS = { 'User-Agent': 'FullControlMTG/1.0' };
-
+const SCRYFALL_COLLECTION = 'https://api.scryfall.com/cards/collection';
+const SCRYFALL_NAMED = 'https://api.scryfall.com/cards/named';
+const HEADERS = { 'Content-Type': 'application/json', 'User-Agent': 'FullControlMTG/1.0' };
+const BATCH_SIZE = 75;
 const MAX_RETRIES = 4;
-const BASE_BACKOFF_MS = 1000; // doubles each attempt: 1s, 2s, 4s, 8s
+const BASE_BACKOFF_MS = 1000;
 const MAX_BACKOFF_MS = 30_000;
 
 const CACHE_DIR = path.join(process.cwd(), '.cache');
@@ -25,11 +22,8 @@ const CACHE_FILE = path.join(CACHE_DIR, 'scryfall-cards.json');
 // --- Disk cache ---
 
 function readCache() {
-  try {
-    return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf-8'));
-  } catch {
-    return {};
-  }
+  try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf-8')); }
+  catch { return {}; }
 }
 
 function writeCache(cache) {
@@ -37,7 +31,7 @@ function writeCache(cache) {
     fs.mkdirSync(CACHE_DIR, { recursive: true });
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
   } catch {
-    // Non-fatal — a failed write just means we re-fetch next time.
+    // Non-fatal — a failed write just means we re-fetch next render.
   }
 }
 
@@ -47,32 +41,18 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-/**
- * Fetch a single Scryfall URL with exponential backoff.
- * - 200: returns parsed JSON
- * - 404: returns null immediately (terminal — caller may try a different URL)
- * - 429 / 5xx: retries up to MAX_RETRIES, honouring Retry-After if present
- * - Network error: retries up to MAX_RETRIES
- */
-async function fetchScryfall(url, attempt = 0) {
+async function fetchWithRetry(url, options = {}, attempt = 0) {
   let res;
   try {
-    // cache: 'no-store' so retries always make a fresh request and we never
-    // cache an error response through the Next.js fetch layer.
-    res = await fetch(url, { headers: HEADERS, cache: 'no-store' });
-  } catch (err) {
-    // Network-level failure (DNS, timeout, etc.)
+    res = await fetch(url, { ...options, headers: HEADERS, cache: 'no-store' });
+  } catch {
     if (attempt >= MAX_RETRIES) return null;
     await sleep(Math.min(BASE_BACKOFF_MS * 2 ** attempt, MAX_BACKOFF_MS));
-    return fetchScryfall(url, attempt + 1);
+    return fetchWithRetry(url, options, attempt + 1);
   }
 
   if (res.ok) return res.json();
-
-  // 404 = card not found at this exact URL; let the caller try fuzzy.
   if (res.status === 404) return null;
-
-  // Anything else (429, 503, …) — retry with backoff.
   if (attempt >= MAX_RETRIES) return null;
 
   const retryAfter = res.headers.get('Retry-After');
@@ -81,10 +61,10 @@ async function fetchScryfall(url, attempt = 0) {
     : BASE_BACKOFF_MS * 2 ** attempt;
 
   await sleep(Math.min(backoff, MAX_BACKOFF_MS));
-  return fetchScryfall(url, attempt + 1);
+  return fetchWithRetry(url, options, attempt + 1);
 }
 
-// --- Card lookup ---
+// --- Scryfall resolution ---
 
 function extractImageUrl(card) {
   return (
@@ -94,16 +74,26 @@ function extractImageUrl(card) {
   );
 }
 
-async function fetchCardByName(name) {
-  const exactUrl =
-    `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ exact: name });
-  const exact = await fetchScryfall(exactUrl);
-  if (exact) return exact;
+async function resolveBatch(names) {
+  const data = await fetchWithRetry(SCRYFALL_COLLECTION, {
+    method: 'POST',
+    body: JSON.stringify({ identifiers: names.map((name) => ({ name })) }),
+  });
 
-  // Exact match returned null (404 or exhausted retries) — try fuzzy.
-  const fuzzyUrl =
-    `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ fuzzy: name });
-  return fetchScryfall(fuzzyUrl);
+  const found = {};
+  for (const card of data?.data ?? []) {
+    const url = extractImageUrl(card);
+    if (url) found[card.name] = url;
+  }
+  const notFound = (data?.not_found ?? []).map((id) => id.name).filter(Boolean);
+  return { found, notFound };
+}
+
+async function resolveFuzzy(name) {
+  const data = await fetchWithRetry(
+    `${SCRYFALL_NAMED}?` + new URLSearchParams({ fuzzy: name })
+  );
+  return data ? extractImageUrl(data) : null;
 }
 
 // --- Public API ---
@@ -111,7 +101,7 @@ async function fetchCardByName(name) {
 /**
  * Fetches Scryfall images for any cards in the decklist that have imageUrl === null.
  * Checks the disk cache first; only hits Scryfall for cards that aren't cached yet.
- * All missing cards are fetched in parallel; each retries independently on failure.
+ * Uses POST /cards/collection for batch resolution, with fuzzy GET fallback.
  * Mutates cards in-place and returns the same decklist object.
  */
 export async function enrichWithScryfallImages(decklist) {
@@ -126,7 +116,6 @@ export async function enrichWithScryfallImages(decklist) {
 
   const cache = readCache();
 
-  // Unique names not already resolved in the disk cache.
   const seen = new Set();
   const toFetch = [];
   for (const card of needImages) {
@@ -136,27 +125,28 @@ export async function enrichWithScryfallImages(decklist) {
     }
   }
 
-  // Fetch all missing cards in parallel; each retries independently on error.
   if (toFetch.length > 0) {
-    const results = await Promise.all(
-      toFetch.map(async (name) => {
-        try {
-          const data = await fetchCardByName(name);
-          return [name, extractImageUrl(data)];
-        } catch {
-          return [name, null];
-        }
-      })
-    );
+    const fuzzyQueue = [];
 
-    for (const [name, url] of results) {
-      if (url) cache[name] = url;
+    for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
+      const { found, notFound } = await resolveBatch(toFetch.slice(i, i + BATCH_SIZE));
+      for (const [name, url] of Object.entries(found)) cache[name] = url;
+      fuzzyQueue.push(...notFound);
+    }
+
+    // Fuzzy fallback in parallel — only a handful of cards ever reach this.
+    if (fuzzyQueue.length > 0) {
+      const results = await Promise.all(
+        fuzzyQueue.map(async (name) => [name, await resolveFuzzy(name)])
+      );
+      for (const [name, url] of results) {
+        if (url) cache[name] = url;
+      }
     }
 
     writeCache(cache);
   }
 
-  // Apply cached URLs to all matching cards.
   for (const card of allCards) {
     if (!card.imageUrl && cache[card.name]) {
       card.imageUrl = cache[card.name];

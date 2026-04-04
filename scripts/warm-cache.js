@@ -1,18 +1,20 @@
 // Pre-warms the Scryfall card-image cache before `next build`.
-// Run via the `prebuild` npm script so the cache is fully populated before
-// Next.js renders any pages. The populated .cache/scryfall-cards.json is then
-// baked into the Docker image, guaranteeing zero cold-start latency for users.
+// Run automatically via the `prebuild` npm script.
 //
-// Logic mirrors src/lib/scryfall.js but is self-contained CommonJS so it can
-// be run directly with `node scripts/warm-cache.js` without transpilation.
+// Uses POST /cards/collection (up to 75 cards per request) to resolve all
+// card names in a handful of batch calls rather than one GET per card.
+// Cards missing from the batch response (not_found) fall back to fuzzy GET.
+// All requests retry on 429 / 5xx with exponential backoff.
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
 
-const SCRYFALL_BASE = 'https://api.scryfall.com';
-const HEADERS = { 'User-Agent': 'FullControlMTG/1.0' };
+const SCRYFALL_COLLECTION = 'https://api.scryfall.com/cards/collection';
+const SCRYFALL_NAMED = 'https://api.scryfall.com/cards/named';
+const HEADERS = { 'Content-Type': 'application/json', 'User-Agent': 'FullControlMTG/1.0' };
+const BATCH_SIZE = 75;
 const MAX_RETRIES = 4;
 const BASE_BACKOFF_MS = 1000;
 const MAX_BACKOFF_MS = 30_000;
@@ -25,7 +27,9 @@ const CACHE_FILE = path.join(CACHE_DIR, 'scryfall-cards.json');
 
 const CARD_LINE_RE = /^(\d+)\s+(.+)$/;
 const SET_SUFFIX_RE = /\s+\([A-Z0-9]{2,6}\)\s+\d+.*$/;
-const IGNORE_HEADERS = new Set(['deck', 'sideboard', 'commander', 'companion', 'maybeboard', 'maybe', 'about']);
+const IGNORE_HEADERS = new Set([
+  'deck', 'sideboard', 'commander', 'companion', 'maybeboard', 'maybe', 'about',
+]);
 
 function parseCardNames(text) {
   const names = new Set();
@@ -46,8 +50,9 @@ function collectAllCardNames() {
   for (const slug of fs.readdirSync(DATA_DIR)) {
     const txtPath = path.join(DATA_DIR, slug, 'deck.txt');
     if (!fs.existsSync(txtPath)) continue;
-    const text = fs.readFileSync(txtPath, 'utf-8');
-    for (const name of parseCardNames(text)) names.add(name);
+    for (const name of parseCardNames(fs.readFileSync(txtPath, 'utf-8'))) {
+      names.add(name);
+    }
   }
   return names;
 }
@@ -64,20 +69,20 @@ function writeCache(cache) {
   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
 
-// ---- Scryfall fetch with exponential backoff -----------------------------
+// ---- Retry-aware fetch ---------------------------------------------------
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function fetchScryfall(url, attempt = 0) {
+async function fetchWithRetry(url, options = {}, attempt = 0) {
   let res;
   try {
-    res = await fetch(url, { headers: HEADERS });
+    res = await fetch(url, { ...options, headers: { ...HEADERS, ...options.headers } });
   } catch {
     if (attempt >= MAX_RETRIES) return null;
     await sleep(Math.min(BASE_BACKOFF_MS * 2 ** attempt, MAX_BACKOFF_MS));
-    return fetchScryfall(url, attempt + 1);
+    return fetchWithRetry(url, options, attempt + 1);
   }
 
   if (res.ok) return res.json();
@@ -90,8 +95,10 @@ async function fetchScryfall(url, attempt = 0) {
     : BASE_BACKOFF_MS * 2 ** attempt;
 
   await sleep(Math.min(backoff, MAX_BACKOFF_MS));
-  return fetchScryfall(url, attempt + 1);
+  return fetchWithRetry(url, options, attempt + 1);
 }
+
+// ---- Scryfall resolution -------------------------------------------------
 
 function extractImageUrl(card) {
   return card?.image_uris?.normal
@@ -99,16 +106,38 @@ function extractImageUrl(card) {
     ?? null;
 }
 
-async function resolveCard(name) {
-  const exact = await fetchScryfall(
-    `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ exact: name })
-  );
-  if (exact) return extractImageUrl(exact);
+/**
+ * Resolve up to 75 card names in a single POST /cards/collection request.
+ * Returns { found: {name: url}, notFound: [name, ...] }
+ */
+async function resolveBatch(names) {
+  const identifiers = names.map((name) => ({ name }));
+  const data = await fetchWithRetry(SCRYFALL_COLLECTION, {
+    method: 'POST',
+    body: JSON.stringify({ identifiers }),
+  });
 
-  const fuzzy = await fetchScryfall(
-    `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ fuzzy: name })
+  const found = {};
+  for (const card of data?.data ?? []) {
+    const url = extractImageUrl(card);
+    if (url) found[card.name] = url;
+  }
+
+  // Scryfall returns not_found with the original identifier objects.
+  const notFound = (data?.not_found ?? []).map((id) => id.name).filter(Boolean);
+
+  return { found, notFound };
+}
+
+/**
+ * Fuzzy GET fallback for cards that the collection endpoint couldn't match
+ * (e.g. split cards where only the front-face name appears in the deck file).
+ */
+async function resolveFuzzy(name) {
+  const data = await fetchWithRetry(
+    `${SCRYFALL_NAMED}?` + new URLSearchParams({ fuzzy: name })
   );
-  return fuzzy ? extractImageUrl(fuzzy) : null;
+  return data ? extractImageUrl(data) : null;
 }
 
 // ---- Main ----------------------------------------------------------------
@@ -129,26 +158,43 @@ async function resolveCard(name) {
   }
 
   console.log(
-    `warm-cache: ${cache ? Object.keys(cache).length : 0} cards cached, ` +
-    `fetching ${toFetch.length} new card(s) from Scryfall…`
+    `warm-cache: ${Object.keys(cache).length} cards cached — ` +
+    `resolving ${toFetch.length} new card(s) via Scryfall…`
   );
 
-  const results = await Promise.all(
-    toFetch.map(async (name) => {
-      const url = await resolveCard(name);
-      if (url) process.stdout.write('.');
-      else process.stdout.write('x');
-      return [name, url];
-    })
-  );
-  process.stdout.write('\n');
+  // Split into batches of 75 and POST each batch.
+  const fuzzyQueue = [];
+  for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
+    const batch = toFetch.slice(i, i + BATCH_SIZE);
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(toFetch.length / BATCH_SIZE);
+    process.stdout.write(`  batch ${batchNum}/${totalBatches} (${batch.length} cards)… `);
 
-  let added = 0;
-  for (const [name, url] of results) {
-    if (url) { cache[name] = url; added++; }
-    else console.warn(`  warn: no image found for "${name}"`);
+    const { found, notFound } = await resolveBatch(batch);
+
+    for (const [name, url] of Object.entries(found)) cache[name] = url;
+    process.stdout.write(`${Object.keys(found).length} resolved`);
+
+    if (notFound.length) {
+      process.stdout.write(`, ${notFound.length} not found (queued for fuzzy)`);
+      fuzzyQueue.push(...notFound);
+    }
+    process.stdout.write('\n');
+  }
+
+  // Fuzzy fallback for cards the batch endpoint couldn't match.
+  if (fuzzyQueue.length > 0) {
+    console.log(`  fuzzy fallback for ${fuzzyQueue.length} card(s)…`);
+    const results = await Promise.all(
+      fuzzyQueue.map(async (name) => [name, await resolveFuzzy(name)])
+    );
+    for (const [name, url] of results) {
+      if (url) { cache[name] = url; process.stdout.write('.'); }
+      else { process.stdout.write('x'); console.warn(`\n  warn: no image found for "${name}"`); }
+    }
+    process.stdout.write('\n');
   }
 
   writeCache(cache);
-  console.log(`warm-cache: done. ${added}/${toFetch.length} new cards cached (${Object.keys(cache).length} total).`);
+  console.log(`warm-cache: done. ${Object.keys(cache).length} total cards cached.`);
 })();
