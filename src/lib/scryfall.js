@@ -7,11 +7,18 @@ import path from 'path';
 //   - Dev:  {project root}/.cache/scryfall-cards.json
 //   - Prod: /app/.cache/scryfall-cards.json  (Docker volume-mounted)
 //
-// Only cards missing from the cache reach Scryfall. Requests are sequential
-// with a 120ms delay to stay under Scryfall's 10 req/s rate limit.
+// Cards missing from the disk cache are fetched in parallel. Each individual
+// request retries on transient errors (429, 5xx) using exponential backoff,
+// respecting Scryfall's Retry-After header when present. 404s skip to the
+// fuzzy fallback immediately; persistent failures are left without an image.
 
 const SCRYFALL_BASE = 'https://api.scryfall.com';
 const HEADERS = { 'User-Agent': 'FullControlMTG/1.0' };
+
+const MAX_RETRIES = 4;
+const BASE_BACKOFF_MS = 1000; // doubles each attempt: 1s, 2s, 4s, 8s
+const MAX_BACKOFF_MS = 30_000;
+
 const CACHE_DIR = path.join(process.cwd(), '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'scryfall-cards.json');
 
@@ -34,7 +41,50 @@ function writeCache(cache) {
   }
 }
 
-// --- Scryfall fetch ---
+// --- Retry-aware fetch ---
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/**
+ * Fetch a single Scryfall URL with exponential backoff.
+ * - 200: returns parsed JSON
+ * - 404: returns null immediately (terminal — caller may try a different URL)
+ * - 429 / 5xx: retries up to MAX_RETRIES, honouring Retry-After if present
+ * - Network error: retries up to MAX_RETRIES
+ */
+async function fetchScryfall(url, attempt = 0) {
+  let res;
+  try {
+    // cache: 'no-store' so retries always make a fresh request and we never
+    // cache an error response through the Next.js fetch layer.
+    res = await fetch(url, { headers: HEADERS, cache: 'no-store' });
+  } catch (err) {
+    // Network-level failure (DNS, timeout, etc.)
+    if (attempt >= MAX_RETRIES) return null;
+    await sleep(Math.min(BASE_BACKOFF_MS * 2 ** attempt, MAX_BACKOFF_MS));
+    return fetchScryfall(url, attempt + 1);
+  }
+
+  if (res.ok) return res.json();
+
+  // 404 = card not found at this exact URL; let the caller try fuzzy.
+  if (res.status === 404) return null;
+
+  // Anything else (429, 503, …) — retry with backoff.
+  if (attempt >= MAX_RETRIES) return null;
+
+  const retryAfter = res.headers.get('Retry-After');
+  const backoff = retryAfter
+    ? Math.ceil(parseFloat(retryAfter)) * 1000
+    : BASE_BACKOFF_MS * 2 ** attempt;
+
+  await sleep(Math.min(backoff, MAX_BACKOFF_MS));
+  return fetchScryfall(url, attempt + 1);
+}
+
+// --- Card lookup ---
 
 function extractImageUrl(card) {
   return (
@@ -45,24 +95,15 @@ function extractImageUrl(card) {
 }
 
 async function fetchCardByName(name) {
-  // Try exact match first; fall back to fuzzy for alternate names / typos.
-  // Only cache successful 200 responses — don't persist 404s.
   const exactUrl =
     `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ exact: name });
-  const res = await fetch(exactUrl, {
-    headers: HEADERS,
-    next: { revalidate: 86400 },
-  });
-  if (res.ok) return res.json();
+  const exact = await fetchScryfall(exactUrl);
+  if (exact) return exact;
 
+  // Exact match returned null (404 or exhausted retries) — try fuzzy.
   const fuzzyUrl =
     `${SCRYFALL_BASE}/cards/named?` + new URLSearchParams({ fuzzy: name });
-  const fuzzyRes = await fetch(fuzzyUrl, {
-    headers: HEADERS,
-    cache: res.status === 404 ? 'no-store' : undefined,
-    next: res.status === 404 ? undefined : { revalidate: 86400 },
-  });
-  return fuzzyRes.ok ? fuzzyRes.json() : null;
+  return fetchScryfall(fuzzyUrl);
 }
 
 // --- Public API ---
@@ -70,6 +111,7 @@ async function fetchCardByName(name) {
 /**
  * Fetches Scryfall images for any cards in the decklist that have imageUrl === null.
  * Checks the disk cache first; only hits Scryfall for cards that aren't cached yet.
+ * All missing cards are fetched in parallel; each retries independently on failure.
  * Mutates cards in-place and returns the same decklist object.
  */
 export async function enrichWithScryfallImages(decklist) {
@@ -84,7 +126,7 @@ export async function enrichWithScryfallImages(decklist) {
 
   const cache = readCache();
 
-  // Unique names not already in the disk cache.
+  // Unique names not already resolved in the disk cache.
   const seen = new Set();
   const toFetch = [];
   for (const card of needImages) {
@@ -94,23 +136,23 @@ export async function enrichWithScryfallImages(decklist) {
     }
   }
 
-  // Fetch missing cards sequentially — 120ms apart to respect Scryfall's rate limit.
-  for (let i = 0; i < toFetch.length; i++) {
-    const name = toFetch[i];
-    try {
-      const data = await fetchCardByName(name);
-      const url = extractImageUrl(data);
-      if (url) cache[name] = url;
-    } catch {
-      // Leave this card without an image; it will be retried next render.
-    }
-    if (i < toFetch.length - 1) {
-      await new Promise((r) => setTimeout(r, 120));
-    }
-  }
-
-  // Persist any new entries back to disk.
+  // Fetch all missing cards in parallel; each retries independently on error.
   if (toFetch.length > 0) {
+    const results = await Promise.all(
+      toFetch.map(async (name) => {
+        try {
+          const data = await fetchCardByName(name);
+          return [name, extractImageUrl(data)];
+        } catch {
+          return [name, null];
+        }
+      })
+    );
+
+    for (const [name, url] of results) {
+      if (url) cache[name] = url;
+    }
+
     writeCache(cache);
   }
 
