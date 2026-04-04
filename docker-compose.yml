@@ -11,6 +11,8 @@ services:
       - NODE_ENV=production
     networks:
       - traefik
+    volumes:
+      - ./.cache:/app/.cache
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fullcontrolmtg.rule=Host(`fullcontrolmtg.com`)"
