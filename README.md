@@ -30,7 +30,7 @@ src/
                           TagBadge, LoadingSpinner,
                           DeckGallery, BlogGallery, ContentGallery (client)
                           MarkdownContent (client — card hover previews)
-    deck/                 CardStack, DecklistViewer
+    deck/                 CardStack, DeckSpread (client), DecklistViewer
   data/
     decks/{slug}/         index.md + assets/ (images mirrored to public/data/)
     blog/{slug}/          index.md + assets/
@@ -122,9 +122,45 @@ Cast [[Goblin Charbelcher]] and activate it for 7 mana.
 
 On hover, the Scryfall card image appears following the cursor. This works in both deck body text and blog posts. Card names are highlighted in the project link color (`#4ecdc4`).
 
+## Decklist (deck.txt)
+
+Each deck folder can optionally include a `src/data/decks/{slug}/deck.txt` file. This serves two purposes:
+
+1. **Moxfield fallback** — if the Moxfield API is unavailable or the deck has no `moxfieldUrl`, the page renders the decklist from the local file instead.
+2. **Custom card ordering** — cards are displayed in the order they appear in `deck.txt`, so you can control how the visual deck spread is arranged.
+
+### Supported formats
+
+All common plain-text formats are accepted:
+
+```
+# MTGA export (preferred — includes set + collector number for precise image lookup)
+Deck
+4 Goblin Charbelcher (MH3) 128
+4 Manamorphose (SPG) 0
+
+Sideboard
+1 Empty the Warrens (DMR) 118
+```
+
+```
+# Simple / MTGO
+4 Goblin Charbelcher
+4 Manamorphose
+
+Sideboard
+1 Empty the Warrens
+```
+
+Recognised section headers (case-insensitive): `Deck`, `Commander`, `Sideboard`, `Companion`, `About`, `Maybeboard`. The `About` and `Maybeboard` sections are ignored.
+
+### Scryfall images
+
+When a deck is rendered from `deck.txt`, card images are fetched from Scryfall server-side using `GET /cards/named`. Each image is cached by Next.js for 24 hours. MTGA-format files (which include set + collector number) link cards directly to their Scryfall page; other formats use an exact-name search link.
+
 ## Moxfield Integration
 
-The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side. Because this runs on the Next.js server, there are no CORS restrictions. Moxfield data is cached for 1 hour via ISR (`revalidate = 3600`). The page renders fully from local markdown if the fetch fails.
+The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side. Because this runs on the Next.js server, there are no CORS restrictions. Moxfield data is cached for 1 hour via ISR (`revalidate = 3600`). The page renders fully from local markdown if the fetch fails — falling back to `deck.txt` if one exists, or a link to Moxfield otherwise.
 
 ## Theme
 
