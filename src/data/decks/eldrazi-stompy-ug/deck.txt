@@ -1,0 +1,35 @@
+About
+Name UG Eldrazi Stompy
+
+Deck
+1 Delighted Halfling
+4 Devourer of Destiny
+2 Emrakul, the Promised End
+4 Kozilek's Command
+4 Malevolent Rumble
+4 Nulldrifter
+4 Sowing Mycospawn
+4 Talisman of Curiosity
+2 Torpor Orb
+1 Ugin, Eye of the Storms
+1 Ugin, the Spirit Dragon
+3 Ugin's Binding
+4 Ugin's Labyrinth
+4 Utopia Sprawl
+2 World Breaker
+1 Blast Zone
+4 Breeding Pool
+1 Cavern of Souls
+4 Eldrazi Temple
+1 Phyrexian Scrapyard
+1 Shifting Woodland
+4 Forest
+
+Sideboard
+1 Bojuka Bog
+4 Chalice of the Void
+4 Consign to Memory
+1 Dismember
+2 Sire of Seven Deaths
+1 Torpor Orb
+2 Wastescape Battlemage

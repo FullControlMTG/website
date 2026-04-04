@@ -1,0 +1,29 @@
+About
+Name Mono Red Painter
+
+Deck
+1 Agatha's Soul Cauldron
+4 Fable of the Mirror-Breaker
+4 Faithless Looting
+2 Gamble
+4 Goblin Engineer
+3 Grindstone
+4 Karn, the Great Creator
+4 Lightning Bolt
+4 Melded Moxite
+3 Painter's Servant
+1 Phyrexian Dragon Engine
+4 Scrap Welder
+4 Ancient Tomb
+4 Darksteel Citadel
+4 Great Furnace
+10 Mountain
+
+Sideboard
+1 Damping Sphere
+1 Grindstone
+1 Liquimetal Coating
+1 Painter's Servant
+1 Pithing Needle
+1 The One Ring
+1 Tormod's Crypt
