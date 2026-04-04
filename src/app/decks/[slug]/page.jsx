@@ -9,11 +9,12 @@ import { enrichWithScryfallImages } from '@/lib/scryfall';
 import DecklistViewer from '@/components/deck/DecklistViewer';
 import TagBadge from '@/components/ui/TagBadge';
 
+// No generateStaticParams — deck pages use on-demand ISR so the first render
+// happens at request time (when the .cache volume is mounted) rather than
+// during `docker build` (when the volume doesn't exist yet). Without the disk
+// cache, parallel build-time rendering hits Scryfall's rate limit and bakes
+// partial image data into static HTML.
 export const revalidate = 3600;
-
-export async function generateStaticParams() {
-  return getAllDecks().map((d) => ({ slug: d.slug }));
-}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
