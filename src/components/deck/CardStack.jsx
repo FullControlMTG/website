@@ -1,8 +1,9 @@
 'use client';
 
-// All sizing is driven by CSS custom properties defined in globals.css.
-// --deck-card-w / --deck-card-h / --deck-strip-h change at each viewport breakpoint.
-// 75% overlap → strip height = 25% of card height.
+// All sizing is driven by CSS custom properties set by DeckSpread as inline vars.
+// 85% overlap → strip height = 15% of card height.
+
+import CardFace from './CardFace';
 
 function scryfallHref(card) {
   if (card.set && card.collectorNumber) {
@@ -40,30 +41,11 @@ function CardItem({ card, index, total }) {
         e.currentTarget.style.transform = 'translateX(0)';
       }}
     >
-      {card.imageUrl ? (
-        <img
-          src={card.imageUrl}
-          alt={card.name}
-          className="w-full rounded-[12px] block"
-          style={{ aspectRatio: '63 / 88' }}
-          loading="lazy"
-        />
-      ) : (
-        <div
-          className="w-full rounded-[12px] bg-[#16213e] border border-white/10 flex items-end p-2"
-          style={{ aspectRatio: '63 / 88' }}
-        >
-          <span className="text-[10px] text-slate-300 leading-tight">{card.name}</span>
-        </div>
-      )}
+      <CardFace card={card} />
     </a>
   );
 }
 
-/**
- * Renders an array of cards as a stacked column at 75% overlap.
- * Each card links to its Scryfall page.
- */
 export default function CardStack({ cards }) {
   if (!cards?.length) return null;
 

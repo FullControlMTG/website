@@ -1,16 +1,3 @@
-/**
- * Parse a plain-text decklist into the same shape that buildDecklist() returns.
- *
- * Supported formats:
- *  - MTGA export:   "4 Card Name (SET) 123"
- *  - Simple:        "4 Card Name"
- *  - MTGO/Cockatrice style (same as simple, optional set suffix ignored)
- *
- * Section headers recognised (case-insensitive):
- *   About / Deck / Commander / Sideboard / Companion / Maybeboard / Maybe
- * Blank lines are ignored.
- */
-
 const SECTION_HEADERS = {
   about: 'ignore',
   deck: 'main',
@@ -21,9 +8,7 @@ const SECTION_HEADERS = {
   maybe: 'maybe',
 };
 
-// Matches: "4 Card Name" with optional trailing MTGA set annotation "(SET) collector_number"
 const CARD_LINE_RE = /^(\d+)\s+(.+)$/;
-// Captures set code and collector number for Scryfall lookups
 const SET_SUFFIX_RE = /\s+\(([A-Z0-9]{2,6})\)\s+(\d+).*$/;
 
 function parseLine(raw) {
@@ -45,10 +30,9 @@ function parseLine(raw) {
   if (setMatch) {
     set = setMatch[1].toLowerCase();
     collectorNumber = setMatch[2];
-    name = name.replace(SET_SUFFIX_RE, '').trim();
-  } else {
-    name = name.trim();
+    name = name.replace(SET_SUFFIX_RE, '');
   }
+  name = name.trim();
 
   if (!name) return null;
   return { type: 'card', quantity, name, set, collectorNumber };

@@ -15,12 +15,6 @@ function computeDims(containerW) {
   return { cols, cardW, cardH, stripH };
 }
 
-/**
- * Lays out an array of individual cards into columns that exactly fill the
- * container width. Column count is derived from container width ÷ MIN_CARD_W,
- * capped at MAX_COLS. All dimensions are injected as CSS variables so
- * CardStack stays pure and layout-agnostic.
- */
 export default function DeckSpread({ cards }) {
   const containerRef = useRef(null);
   const [dims, setDims] = useState(null); // null until measured
@@ -37,13 +31,13 @@ export default function DeckSpread({ cards }) {
     return () => ro.disconnect();
   }, []);
 
-  // Fill columns sequentially so same-name cards stay in the same column.
-  const numCols = dims?.cols ?? MAX_COLS;
-  const cardsPerCol = Math.ceil(cards.length / numCols);
   const columns = [];
-  for (let c = 0; c < numCols; c++) {
-    const slice = cards.slice(c * cardsPerCol, (c + 1) * cardsPerCol);
-    if (slice.length > 0) columns.push(slice);
+  if (dims) {
+    const cardsPerCol = Math.ceil(cards.length / dims.cols);
+    for (let c = 0; c < dims.cols; c++) {
+      const slice = cards.slice(c * cardsPerCol, (c + 1) * cardsPerCol);
+      if (slice.length > 0) columns.push(slice);
+    }
   }
 
   const cssVars = dims

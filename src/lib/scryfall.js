@@ -1,13 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-// Server-side Scryfall enrichment with a persistent disk cache.
-//
-// Cache lives at .cache/scryfall-cards.json relative to process.cwd().
-// Cards missing from the disk cache are resolved via POST /cards/collection
-// (up to 75 per request) with exponential backoff on failure.
-// Unmatched cards fall back to GET /cards/named?fuzzy=.
-
 const SCRYFALL_COLLECTION = 'https://api.scryfall.com/cards/collection';
 const SCRYFALL_NAMED = 'https://api.scryfall.com/cards/named';
 const HEADERS = { 'Content-Type': 'application/json', 'User-Agent': 'FullControlMTG/1.0' };
@@ -18,8 +11,6 @@ const MAX_BACKOFF_MS = 30_000;
 
 const CACHE_DIR = path.join(process.cwd(), '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'scryfall-cards.json');
-
-// --- Disk cache ---
 
 function readCache() {
   try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf-8')); }
@@ -34,8 +25,6 @@ function writeCache(cache) {
     // Non-fatal — a failed write just means we re-fetch next render.
   }
 }
-
-// --- Retry-aware fetch ---
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -64,8 +53,6 @@ async function fetchWithRetry(url, options = {}, attempt = 0) {
   return fetchWithRetry(url, options, attempt + 1);
 }
 
-// --- Scryfall resolution ---
-
 function extractImageUrl(card) {
   return (
     card?.image_uris?.normal ??
@@ -80,8 +67,7 @@ async function resolveBatch(names) {
     body: JSON.stringify({ identifiers: names.map((name) => ({ name })) }),
   });
 
-  // Map results back to the input name, not Scryfall's card.name.
-  // Split cards are returned as "Front // Back" but queried as "Front".
+  // Split cards are returned as "Front // Back" but deck.txt only has "Front".
   const inputIndex = {};
   for (const name of names) inputIndex[name.toLowerCase()] = name;
 
@@ -106,14 +92,6 @@ async function resolveFuzzy(name) {
   return data ? extractImageUrl(data) : null;
 }
 
-// --- Public API ---
-
-/**
- * Fetches Scryfall images for any cards in the decklist that have imageUrl === null.
- * Checks the disk cache first; only hits Scryfall for cards that aren't cached yet.
- * Uses POST /cards/collection for batch resolution, with fuzzy GET fallback.
- * Mutates cards in-place and returns the same decklist object.
- */
 export async function enrichWithScryfallImages(decklist) {
   const allCards = [
     ...decklist.commanders,
@@ -144,7 +122,6 @@ export async function enrichWithScryfallImages(decklist) {
       fuzzyQueue.push(...notFound);
     }
 
-    // Fuzzy fallback in parallel — only a handful of cards ever reach this.
     if (fuzzyQueue.length > 0) {
       const results = await Promise.all(
         fuzzyQueue.map(async (name) => [name, await resolveFuzzy(name)])

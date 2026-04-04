@@ -1,11 +1,3 @@
-// Pre-warms the Scryfall card-image cache before `next build`.
-// Run automatically via the `prebuild` npm script.
-//
-// Uses POST /cards/collection (up to 75 cards per request) to resolve all
-// card names in a handful of batch calls rather than one GET per card.
-// Cards missing from the batch response (not_found) fall back to fuzzy GET.
-// All requests retry on 429 / 5xx with exponential backoff.
-
 'use strict';
 
 const fs = require('fs');
@@ -22,8 +14,6 @@ const MAX_BACKOFF_MS = 30_000;
 const DATA_DIR = path.join(__dirname, '..', 'src', 'data', 'decks');
 const CACHE_DIR = path.join(__dirname, '..', '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'scryfall-cards.json');
-
-// ---- Deck parsing --------------------------------------------------------
 
 const CARD_LINE_RE = /^(\d+)\s+(.+)$/;
 const SET_SUFFIX_RE = /\s+\([A-Z0-9]{2,6}\)\s+\d+.*$/;
@@ -57,8 +47,6 @@ function collectAllCardNames() {
   return names;
 }
 
-// ---- Cache I/O -----------------------------------------------------------
-
 function readCache() {
   try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf-8')); }
   catch { return {}; }
@@ -68,8 +56,6 @@ function writeCache(cache) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
-
-// ---- Retry-aware fetch ---------------------------------------------------
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -98,39 +84,26 @@ async function fetchWithRetry(url, options = {}, attempt = 0) {
   return fetchWithRetry(url, options, attempt + 1);
 }
 
-// ---- Scryfall resolution -------------------------------------------------
-
 function extractImageUrl(card) {
   return card?.image_uris?.normal
     ?? card?.card_faces?.[0]?.image_uris?.normal
     ?? null;
 }
 
-/**
- * Resolve up to 75 card names in a single POST /cards/collection request.
- * Returns { found: {name: url}, notFound: [name, ...] }
- */
 async function resolveBatch(names) {
-  const identifiers = names.map((name) => ({ name }));
   const data = await fetchWithRetry(SCRYFALL_COLLECTION, {
     method: 'POST',
-    body: JSON.stringify({ identifiers }),
+    body: JSON.stringify({ identifiers: names.map((name) => ({ name })) }),
   });
 
-  // Build a reverse index from lowercase deck-name → original input name so we
-  // can map Scryfall's returned card.name back to whatever we queried.
-  // Split cards are returned as "Front // Back" but queried as "Front", so we
-  // also index the front-face portion of any split name.
+  // Split cards are returned as "Front // Back" but deck.txt only has "Front".
   const inputIndex = {};
-  for (const name of names) {
-    inputIndex[name.toLowerCase()] = name;
-  }
+  for (const name of names) inputIndex[name.toLowerCase()] = name;
 
   const found = {};
   for (const card of data?.data ?? []) {
     const url = extractImageUrl(card);
     if (!url) continue;
-    // Try exact match, then front-face of split cards ("A // B" → "A").
     const key =
       inputIndex[card.name.toLowerCase()] ??
       inputIndex[card.name.split(' // ')[0].toLowerCase()];
@@ -141,18 +114,12 @@ async function resolveBatch(names) {
   return { found, notFound };
 }
 
-/**
- * Fuzzy GET fallback for cards that the collection endpoint couldn't match
- * (e.g. split cards where only the front-face name appears in the deck file).
- */
 async function resolveFuzzy(name) {
   const data = await fetchWithRetry(
     `${SCRYFALL_NAMED}?` + new URLSearchParams({ fuzzy: name })
   );
   return data ? extractImageUrl(data) : null;
 }
-
-// ---- Main ----------------------------------------------------------------
 
 (async () => {
   const allNames = collectAllCardNames();
@@ -174,7 +141,6 @@ async function resolveFuzzy(name) {
     `resolving ${toFetch.length} new card(s) via Scryfall…`
   );
 
-  // Split into batches of 75 and POST each batch.
   const fuzzyQueue = [];
   for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
     const batch = toFetch.slice(i, i + BATCH_SIZE);
@@ -194,7 +160,6 @@ async function resolveFuzzy(name) {
     process.stdout.write('\n');
   }
 
-  // Fuzzy fallback for cards the batch endpoint couldn't match.
   if (fuzzyQueue.length > 0) {
     console.log(`  fuzzy fallback for ${fuzzyQueue.length} card(s)…`);
     const results = await Promise.all(

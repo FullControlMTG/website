@@ -1,6 +1,6 @@
 import DeckSpread from './DeckSpread';
+import CardFace from './CardFace';
 
-/** Expand each card entry into N individual single-card slots. */
 function expandAll(cards) {
   const result = [];
   for (const card of cards) {
@@ -29,21 +29,7 @@ export default function DecklistViewer({ decklist }) {
             {commanders.map((card) => (
               <div key={card.name} className="flex flex-col gap-2">
                 <div style={{ width: 'var(--deck-card-w)' }}>
-                  {card.imageUrl ? (
-                    <img
-                      src={card.imageUrl}
-                      alt={card.name}
-                      className="w-full rounded-lg shadow-lg"
-                      style={{ aspectRatio: '63 / 88' }}
-                    />
-                  ) : (
-                    <div
-                      className="w-full rounded-lg bg-[#16213e] border border-white/10 flex items-center justify-center p-3"
-                      style={{ aspectRatio: '63 / 88' }}
-                    >
-                      <span className="text-xs text-slate-300 text-center">{card.name}</span>
-                    </div>
-                  )}
+                  <CardFace card={card} variant="commander" />
                 </div>
                 <span
                   className="text-xs text-slate-400 text-center"
