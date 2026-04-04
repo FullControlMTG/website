@@ -4,6 +4,7 @@
   "description": "The official FullControlMTG website, showcasing decklists, deck showcases, and other FullControlMTG related content.",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/warm-cache.js",
     "build": "next build",
     "start": "next start"
   },
