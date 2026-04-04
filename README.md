@@ -156,7 +156,16 @@ Recognised section headers (case-insensitive): `Deck`, `Commander`, `Sideboard`,
 
 ### Scryfall images
 
-When a deck is rendered from `deck.txt`, card images are fetched from Scryfall server-side using `GET /cards/named`. Each image is cached by Next.js for 24 hours. MTGA-format files (which include set + collector number) link cards directly to their Scryfall page; other formats use an exact-name search link.
+Card images are resolved from card names to Scryfall image URLs and stored in `.cache/scryfall-cards.json` (gitignored). This file is the persistent image cache — its lifecycle is:
+
+| Stage | What happens |
+|---|---|
+| `npm run build` | `prebuild` runs `scripts/warm-cache.js` first — reads every `deck.txt`, batches all unique card names into `POST /cards/collection` calls (75 at a time), writes results to `.cache/scryfall-cards.json`. `next build` then pre-renders all deck pages reading entirely from the warm cache — zero Scryfall calls during render. |
+| `docker build` | The populated `.cache/` is copied from the build stage into the serve image (`COPY --from=build /app/.cache ./.cache`), so the cache is baked in and available from the first request. |
+| `npm run dev` | `prebuild` does not run. The cache is read lazily — missing cards are fetched from Scryfall on the first page visit and written to the file. |
+| Running container | Cache reads only. Any write (missing card fetched at runtime) is ephemeral — lost on the next `docker compose up --build`. Rebuild to make new cards permanent. |
+
+If a card is missing from the cache at runtime, `enrichWithScryfallImages` resolves it on that request via the same batch POST approach and serves the correct image — but the fix is not persisted in production until the next build.
 
 ## Moxfield Integration
 

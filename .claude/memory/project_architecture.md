@@ -4,38 +4,61 @@ description: Tech stack, file structure, routing, styling tokens, and key design
 type: project
 ---
 
-Vite + React + React Router v7 + Tailwind CSS v4. Fully static — no backend, no CMS. Deploys to any CDN.
+Next.js 15 (App Router) + React 19 + Tailwind CSS v4. Server-rendered, Docker deployed. No separate backend.
 
-**Why:** Content-first MTG brand site. All content lives as markdown files; adding a deck or post requires no code changes.
+**Why Next.js:** Replaced Vite+React Router SPA to enable server-side Moxfield API calls (CORS bypass) and ISR caching of deck pages.
 
 ## Stack decisions
-- **js-yaml** instead of gray-matter — gray-matter calls `Buffer.from()` on every parse, which throws in the browser. js-yaml has no such dependency.
-- **Tailwind v4** — configured via `@tailwindcss/vite` plugin. No `tailwind.config.js`. Custom tokens defined in `src/index.css` under `@theme`. Typography plugin registered with `@plugin "@tailwindcss/typography"`.
-- **`font-display` utility** — maps to `--font-family-display: "Space Grotesk", sans-serif` in `@theme`. All headings use `font-display`. Body uses Inter.
-- **marked** for rendering markdown body content in deck detail and blog post pages.
+- **Next.js App Router** — Server Components by default; client components marked with `'use client'`
+- **@tailwindcss/postcss** — Tailwind v4 PostCSS plugin for Next.js (replaces `@tailwindcss/vite`)
+- **next/font/google** — Space Grotesk + Inter self-hosted at build time (no Google CDN)
+- **js-yaml** — YAML frontmatter parsing (server-side, no browser Buffer issue)
+- **marked** — markdown body → HTML in deck detail and blog post pages, extended with `[[Card Name]]` card reference syntax via `src/lib/parseMarkdown.js`
+- **`output: 'standalone'`** — minimal Docker image; `src/data/` and `.cache/` explicitly copied in Dockerfile
 
 ## File structure
 ```
 src/
-  api/moxfield.js           Moxfield fetch + parse utilities
+  app/                    Next.js App Router
+    layout.jsx            Root layout
+    globals.css           Global styles + @theme tokens
+    page.jsx              Landing
+    decks/page.jsx        Deck gallery
+    decks/[slug]/page.jsx Deck detail (async server component, fetches Moxfield)
+    blog/page.jsx         Blog gallery
+    blog/[slug]/page.jsx  Blog post
+    content/page.jsx      Video gallery
+    products/ about/ support/ contact/
+    contact/ContactForm.jsx  'use client' form component
   components/
-    layout/                 Header, Footer, Layout
-    ui/                     BlogCard, DeckCard, VideoCard, HeroCarousel,
-                            TagBadge, LoadingSpinner
+    layout/               Header ('use client'), Footer
+    ui/                   DeckCard, BlogCard, VideoCard, TagBadge, LoadingSpinner (server)
+                          HeroCarousel ('use client')
+                          DeckGallery, BlogGallery, ContentGallery ('use client' — search/filter)
+                          MarkdownContent ('use client' — renders HTML with card hover previews)
+    deck/                 CardStack ('use client'), DeckSpread ('use client'), DecklistViewer (server)
   data/
-    decks/{slug}/           index.md + assets/
-    blog/{slug}/            index.md + assets/
-    content/{slug}/         index.md + assets/
-  pages/                    One file per route
-  utils/markdown.js         Entire data layer
-  index.css                 Global styles + @theme tokens
+    decks/{slug}/         index.md + optional deck.txt + (assets in public/data/...)
+    blog/{slug}/          index.md
+    content/{slug}/       index.md
+  lib/
+    markdown.js           Server-only fs-based data layer (includes readDeckTxt)
+    moxfield.js           Server-only Moxfield fetch + parse
+    parseDeckTxt.js       Parses deck.txt into the same shape as buildDecklist()
+    scryfall.js           Server-only Scryfall image enrichment for deck.txt cards
+scripts/
+  warm-cache.js           Prebuild script — populates .cache/scryfall-cards.json before next build
+.cache/
+  scryfall-cards.json     Gitignored. Maps card name → Scryfall image URL. Baked into Docker image.
+public/
+  data/                   Local image assets (mirrors src/data/ slug structure)
 ```
 
 ## Routing
 ```
 /                   Landing
 /decks              Deck gallery
-/decks/:slug        Deck detail
+/decks/:slug        Deck detail (ISR, revalidate 1h)
 /blog               Blog gallery
 /blog/:slug         Blog post
 /content            Video gallery
@@ -45,10 +68,13 @@ src/
 /contact
 ```
 
-## Theme tokens (src/index.css)
+## Server vs Client components
+- **Server**: all pages, Footer, DeckCard, BlogCard, VideoCard, TagBadge, LoadingSpinner, DecklistViewer
+- **Client** (`'use client'`): Header (mobile menu), HeroCarousel (interval), CardStack (hover JS), DeckSpread (ResizeObserver + column layout), DeckGallery/BlogGallery/ContentGallery (search/filter state), ContactForm (mailto link), MarkdownContent (card hover previews)
+
+## Theme tokens (src/app/globals.css)
 | Token                 | Value     | Role                        |
-|-----------------------|-----------|-----------------------------|
-| `--color-brand-900`   | #0d0d1a   | Page background             |
+|-----------------------|-----------|-----------------------------||  `--color-brand-900`   | #0d0d1a   | Page background             |
 | `--color-brand-800`   | #1a1a2e   | Card/panel backgrounds      |
 | `--color-brand-700`   | #16213e   | Secondary backgrounds       |
 | `--color-brand-600`   | #0f3460   | Tertiary / image fallback   |
@@ -56,8 +82,19 @@ src/
 | `--color-primary-light` | #bae6fd | Hover variant of primary    |
 | `--color-accent`      | #e94560   | CTAs, video hover           |
 | `--color-accent-hover`| #c73652   | CTA hover                   |
+| `--color-link`        | #4ecdc4   | Prose links, card name refs |
+
+Fonts injected via CSS variables `--font-display` and `--font-sans` from `next/font/google` on `<html>`.
 
 ## Key commands
-- `npm run dev` → localhost:5173
-- `npm run build` → dist/
-- `npm run preview` → preview built dist
+- `npm run dev` → localhost:3000 (no prebuild; Scryfall cache populated lazily)
+- `npm run build` → runs `prebuild` (warm-cache.js) then `next build`
+- `npm start` → serve production build locally
+- Deploy: `docker compose down && docker system prune && docker compose up -d --build`
+
+## Scryfall cache lifecycle
+`.cache/scryfall-cards.json` maps card name → Scryfall image URL.
+- **Build time:** `prebuild` populates it for all `deck.txt` cards before `next build` runs
+- **Docker image:** `.cache/` copied from build stage into serve stage — baked in, available from first request
+- **Dev:** populated lazily on first page visit per missing card
+- **Runtime writes:** ephemeral — lost on next `docker compose up --build`. Rebuild to persist new cards.
