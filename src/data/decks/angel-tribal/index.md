@@ -1,9 +1,9 @@
 ---
 title: "Angel Tribal"
 description: "This aggressive deck builds a wide board state and insurmountable life total that most decks can't handle."
-category: "Timeless"
+category: "Historic"
 tags:
-  - Timeless
+  - Historic
   - Aggro
   - White
   - Green
