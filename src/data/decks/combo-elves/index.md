@@ -8,7 +8,8 @@ tags:
   - Green
 moxfieldUrl: "https://moxfield.com/decks/1REBMJ67t0WzNbpmv7W0DQ"
 image: "./assets/decklist.png"
-publishedAt: "2026-04-09"
+publishedOn: "2026-04-09"
+published: true
 updatedAt: "2026-04-09"
 featured: true
 ---

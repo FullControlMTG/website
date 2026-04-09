@@ -28,7 +28,8 @@
       "Bash(ls \"c:\\\\Users\\\\runya\\\\Documents\\\\repositories\\\\fullcontrolmtg-website\\\\public\\\\data\\\\decks\\\\historic-lotus-breach\\\\assets\"\" 2>/dev/null || echo \"Directory not found \")",
       "WebFetch(domain:scryfall.com)",
       "WebSearch",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(perl -i -pe 's/\\\\bpublishedAt\\\\b/publishedOn/g' \"c:/Users/runya/.claude/projects/c--Users-runya-Documents-repositories-fullcontrolmtg-website/memory/data_format.md\" \"c:/Users/runya/Documents/repositories/fullcontrolmtg-website/README.md\")"
     ]
   }
 }

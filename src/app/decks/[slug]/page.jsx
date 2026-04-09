@@ -158,10 +158,10 @@ export default async function DeckDetailPage({ params }) {
                   </dd>
                 </div>
               )}
-              {fm.publishedAt && (
+              {fm.publishedOn && (
                 <div className="flex justify-between">
                   <dt className="text-slate-400">Published</dt>
-                  <dd className="text-white">{new Date(fm.publishedAt).toLocaleDateString()}</dd>
+                  <dd className="text-white">{new Date(fm.publishedOn).toLocaleDateString()}</dd>
                 </div>
               )}
             </dl>

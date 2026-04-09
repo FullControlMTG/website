@@ -8,6 +8,7 @@ tags:
   - Combo
   - Red
   - Blue
-publishedAt: "2025-01-12"
+publishedOn: "2025-01-12"
+published: true
 featured: true
 ---

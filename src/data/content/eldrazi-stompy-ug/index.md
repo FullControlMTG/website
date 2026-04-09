@@ -8,6 +8,7 @@ tags:
   - Aggro
   - Blue
   - Green
-publishedAt: "2024-09-23"
+publishedOn: "2024-09-23"
+published: true
 featured: true
 ---

@@ -7,6 +7,7 @@ tags:
   - Historic
   - Aggro
   - White
-publishedAt: "2024-09-16"
+publishedOn: "2024-09-16"
+published: true
 featured: true
 ---

@@ -2,7 +2,8 @@
 title: "Understanding Your Lines: Combo Timing, Protection, and Finding Your Route to Victory"
 description: "We break down when you should combo, how you should protect your attempt, and the non-obvious lines that separate good pilots from great ones."
 author: "FullControlMTG"
-publishedAt: "2025-03-13"
+publishedOn: "2025-03-13"
+published: true
 tags:
   - Strategy
   - Combo

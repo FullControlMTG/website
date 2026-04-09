@@ -9,6 +9,7 @@ tags:
   - Black
   - Blue
   - Green
-publishedAt: "2024-09-20"
+publishedOn: "2024-09-20"
+published: true
 featured: true
 ---

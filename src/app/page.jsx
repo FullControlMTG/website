@@ -267,8 +267,8 @@ export default function Landing() {
                 )}
                 <div className="flex flex-col flex-1 p-8 justify-end">
                   <span className="text-xs font-semibold uppercase tracking-widest text-[#7dd3fc]/60 mb-3">
-                    {featuredPosts[0].frontmatter.publishedAt
-                      ? new Date(featuredPosts[0].frontmatter.publishedAt).toLocaleDateString('en-US', {
+                    {featuredPosts[0].frontmatter.publishedOn
+                      ? new Date(featuredPosts[0].frontmatter.publishedOn).toLocaleDateString('en-US', {
                           year: 'numeric', month: 'long', day: 'numeric',
                         })
                       : 'Recent'}
@@ -292,8 +292,8 @@ export default function Landing() {
                 >
                   <div>
                     <span className="text-xs font-semibold uppercase tracking-widest text-[#7dd3fc]/60 mb-3 block">
-                      {post.frontmatter.publishedAt
-                        ? new Date(post.frontmatter.publishedAt).toLocaleDateString('en-US', {
+                      {post.frontmatter.publishedOn
+                        ? new Date(post.frontmatter.publishedOn).toLocaleDateString('en-US', {
                             year: 'numeric', month: 'short', day: 'numeric',
                           })
                         : 'Recent'}

@@ -8,7 +8,8 @@ tags:
   - Black
 moxfieldUrl: "https://moxfield.com/decks/nLvi9lq9ckugCDuqTYMQGA"
 image: "./assets/decklist.png"
-publishedAt: "2026-03-13"
+publishedOn: "2026-03-13"
+published: true
 updatedAt: "2026-03-13"
 featured: true
 ---

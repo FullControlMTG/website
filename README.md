@@ -71,8 +71,9 @@ tags:
   - tag-two
 moxfieldUrl: "https://moxfield.com/decks/aBcDeFgHiJkLmN"  # ID is derived from this
 image: "./assets/cover.jpg"    # or a Scryfall art URL
-publishedAt: "2025-01-15"
+publishedOn: "2025-01-15"
 updatedAt: "2025-03-01"        # optional
+published: false               # optional — omit or true to publish; false hides from all listings
 featured: true                 # shows in hero carousel and homepage
 ---
 ```
@@ -106,7 +107,8 @@ Changelog entries — newest first, each update as an H3 with `{Date} | {Title}`
 title: "Post Title"
 description: "One-sentence summary."
 author: "FullControlMTG"
-publishedAt: "2025-03-01"
+publishedOn: "2025-03-01"
+published: false               # optional — omit or true to publish; false hides from all listings
 tags:
   - strategy
 coverImage: "./assets/cover.jpg"  # or external URL
@@ -126,7 +128,8 @@ thumbnail: "./assets/thumb.jpg"   # defaults to YouTube's maxresdefault if omitt
 relatedDeckSlug: "deck-slug"      # optional — links to a deck page
 tags:
   - deck-tech
-publishedAt: "2025-02-10"
+publishedOn: "2025-02-10"
+published: false               # optional — omit or true to publish; false hides from all listings
 featured: true
 ---
 ```

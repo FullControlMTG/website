@@ -2,7 +2,8 @@
 title: "A History of Timeless Belcher"
 description: "We break down the classic eternal Goblin Charbelcher decks, and how they have transitioned into the MTGA non-rotating formats."
 author: "FullControlMTG"
-publishedAt: "2025-03-23"
+publishedOn: "2025-03-23"
+published: true
 tags:
   - Strategy
   - Combo

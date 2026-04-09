@@ -48,15 +48,15 @@ export default async function BlogPostPage({ params }) {
 
       <div className="flex items-center gap-2 mb-8 text-sm text-slate-500">
         {fm.author && <span className="text-slate-400">{fm.author}</span>}
-        {fm.author && fm.publishedAt && <span>·</span>}
-        {fm.publishedAt && (
-          <time dateTime={fm.publishedAt}>
-            {new Date(fm.publishedAt).toLocaleDateString('en-US', {
+        {fm.author && fm.publishedOn && <span>·</span>}
+        {fm.publishedOn && (
+          <time dateTime={fm.publishedOn}>
+            {new Date(fm.publishedOn).toLocaleDateString('en-US', {
               year: 'numeric', month: 'long', day: 'numeric',
             })}
           </time>
         )}
-        {fm.updatedAt && fm.updatedAt !== fm.publishedAt && (
+        {fm.updatedAt && fm.updatedAt !== fm.publishedOn && (
           <>
             <span>·</span>
             <span>

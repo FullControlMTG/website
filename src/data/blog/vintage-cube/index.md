@@ -2,7 +2,8 @@
 title: "A Love Letter to the Vintage Cube"
 description: "Some of the reasons that proxying the MTGO Vintage Cube might be what your commander playgroup needs."
 author: "FullControlMTG"
-publishedAt: "2025-03-10"
+publishedOn: "2025-03-10"
+published: true
 tags:
   - Limited
 coverImage: "./assets/vintage-cube.jpg"

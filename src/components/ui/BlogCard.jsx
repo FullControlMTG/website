@@ -22,10 +22,10 @@ export default function BlogCard({ post }) {
       <div className="flex flex-col flex-1 p-5">
         <div className="flex items-center gap-2 mb-3 text-xs text-slate-500">
           {fm.author && <span>{fm.author}</span>}
-          {fm.author && fm.publishedAt && <span>·</span>}
-          {fm.publishedAt && (
-            <time dateTime={fm.publishedAt}>
-              {new Date(fm.publishedAt).toLocaleDateString('en-US', {
+          {fm.author && fm.publishedOn && <span>·</span>}
+          {fm.publishedOn && (
+            <time dateTime={fm.publishedOn}>
+              {new Date(fm.publishedOn).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

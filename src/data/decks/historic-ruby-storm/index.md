@@ -9,7 +9,8 @@ tags:
   - Red
 moxfieldUrl: "https://moxfield.com/decks/TbmiS8TkgkqkQJUX2Q45rA"
 image: "./assets/decklist.png"
-publishedAt: "2026-04-03"
+publishedOn: "2026-04-03"
+published: true
 updatedAt: "2026-04-03"
 featured: true
 ---

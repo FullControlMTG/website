@@ -55,9 +55,10 @@ function readAll(type) {
     .readdirSync(dir, { withFileTypes: true })
     .filter((e) => e.isDirectory())
     .map((e) => parseFile(type, e.name))
+    .filter((item) => item.frontmatter.published !== false)
     .sort(
       (a, b) =>
-        new Date(b.frontmatter.publishedAt) - new Date(a.frontmatter.publishedAt),
+        new Date(b.frontmatter.publishedOn) - new Date(a.frontmatter.publishedOn),
     );
 }
 

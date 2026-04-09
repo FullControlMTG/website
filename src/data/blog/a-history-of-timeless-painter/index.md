@@ -2,7 +2,8 @@
 title: "A History of Timeless Painter"
 description: "We break down the iconic eternal Painter's Servant combo, and where its place lies in the MTG Arena non-rotating formats."
 author: "FullControlMTG"
-publishedAt: "2025-03-23"
+publishedOn: "2025-03-23"
+published: true
 tags:
   - Strategy
   - Combo
