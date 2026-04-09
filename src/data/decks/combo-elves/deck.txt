@@ -1,0 +1,28 @@
+Deck
+1 Allosaurus Shepherd (JMP) 28
+4 Collected Company (AKR) 186
+1 Craterhoof Behemoth (JMP) 385
+4 Dwynen's Elite (JMP) 389
+1 Eladamri, Korvecdal (MH3) 149
+4 Elvish Mystic (M14) 169
+4 Elvish Visionary (ORI) 175
+4 Elvish Warmaster (KHM) 167
+4 Leaf-Crowned Visionary (DMU) 167
+4 Llanowar Elves (DAR) 168
+4 Priest of Titania (MH3) 286
+4 Wirewood Symbiote (MH3) 288
+2 Badgermole Cub (TLA) 167
+1 Shaman of the Pack (ORI) 217
+2 Wastewood Verge (DFT) 268
+1 Bala Ged Recovery (PIO) 165
+2 Boseiju, Who Endures (NEO) 266
+4 Castle Garenbrig (ELD) 240
+4 Cavern of Souls (LCI) 269
+5 Forest (MID) 276
+
+Sideboard
+3 A-Tyvar Kell (KHM) 198
+4 Deathrite Shaman (RTR) 213
+3 Shaman of the Pack (ORI) 217
+1 Reclamation Sage (FDN) 231
+4 Overgrown Tomb (GRN) 253
