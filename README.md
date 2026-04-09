@@ -77,7 +77,26 @@ featured: true                 # shows in hero carousel and homepage
 ---
 ```
 
-3. Optionally add a markdown body below the frontmatter — rendered as "About This Deck" on the detail page.
+3. Add a markdown body below the frontmatter using this standard section template:
+
+```markdown
+## Overview
+Deck summary.
+
+## Win Conditions
+How the deck closes out games.
+
+## Pilot Notes
+### Note 1
+Tips and sequencing advice (one H3 per note).
+
+## Cards to Watch
+Standout cards worth highlighting.
+
+## Updates
+### April 1, 2026 | Patch Title
+Changelog entries — newest first, each update as an H3 with `{Date} | {Title}`.
+```
 4. Drop images in `public/data/decks/{slug}/assets/`.
 
 ### Blog Post
