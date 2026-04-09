@@ -32,8 +32,17 @@ Here are a few assorted lines to victory:
 
 ## Pilot Notes
 
+### MDFC Lands
 The newer MDFC lands can enter untapped for 3 life. This is sometimes an issue against aggressive strategies. Identifying the opponent's strategy allows you to comfortably take setup turns toward a protected combo, or manage your life total against a fast aggro gameplan.
 
-With a healthy amount of tutors, this deck can usually map out kills from far away. Consider your A+B combos available and then work backwards to find your route.
+### Mapping Combo Lines
+With a healthy amount of tutors, this deck can usually map out kills from far away. Consider your A+B combos available first, and then work backwards to find your route.
 
 Control matchups are difficult. If you identify you have to deal with countermagic, consider firing off tutors to bait countermagic, or, if they let them resolve, find [[Veil of Summer]] or [[Thoughtseize]] to shove your combo through.
+
+## Cards to Watch
+Coming Soon!
+
+## Updates
+### April 1, 2026 | April Fool's!
+Coming Soon!

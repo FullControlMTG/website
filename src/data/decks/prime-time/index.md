@@ -22,5 +22,13 @@ Coming Soon!
 Coming Soon!
 
 ## Pilot Notes
+### Note 1
 
+Coming Soon!
+
+## Cards to Watch
+Coming Soon!
+
+## Updates
+### April 1, 2026 | April Fool's!
 Coming Soon!
