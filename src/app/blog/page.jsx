@@ -1,6 +1,7 @@
 import { getAllPosts } from '@/lib/markdown';
 import BlogGallery from '@/components/ui/BlogGallery';
 
+export const revalidate = 3600;
 export const metadata = { title: 'Blog — FullControlMTG' };
 
 export default function BlogPage() {

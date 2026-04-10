@@ -1,6 +1,7 @@
 import { getAllDecks } from '@/lib/markdown';
 import DeckGallery from '@/components/ui/DeckGallery';
 
+export const revalidate = 3600;
 export const metadata = { title: 'Decklists — FullControlMTG' };
 
 export default function DecksPage() {

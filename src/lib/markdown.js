@@ -48,7 +48,9 @@ function parseFile(type, slug) {
   return { slug, frontmatter, body };
 }
 
-function readAll(type) {
+// Single source of truth for all published content.
+// All exported getters flow through here — published: false items never surface.
+function readPublished(type) {
   const dir = path.join(DATA_DIR, type);
   if (!fs.existsSync(dir)) return [];
   return fs
@@ -62,41 +64,17 @@ function readAll(type) {
     );
 }
 
-export function getAllDecks() {
-  return readAll('decks');
-}
+export function getAllDecks()   { return readPublished('decks'); }
+export function getAllPosts()   { return readPublished('blog'); }
+export function getAllContent() { return readPublished('content'); }
 
-export function getDeckBySlug(slug) {
-  return getAllDecks().find((d) => d.slug === slug) ?? null;
-}
+export function getDeckBySlug(slug)    { return getAllDecks().find((d) => d.slug === slug) ?? null; }
+export function getPostBySlug(slug)    { return getAllPosts().find((p) => p.slug === slug) ?? null; }
+export function getContentBySlug(slug) { return getAllContent().find((c) => c.slug === slug) ?? null; }
 
-export function getAllPosts() {
-  return readAll('blog');
-}
-
-export function getPostBySlug(slug) {
-  return getAllPosts().find((p) => p.slug === slug) ?? null;
-}
-
-export function getAllContent() {
-  return readAll('content');
-}
-
-export function getContentBySlug(slug) {
-  return getAllContent().find((c) => c.slug === slug) ?? null;
-}
-
-export function getFeaturedDecks() {
-  return getAllDecks().filter((d) => d.frontmatter.featured);
-}
-
-export function getFeaturedPosts() {
-  return getAllPosts().filter((p) => p.frontmatter.featured);
-}
-
-export function getFeaturedContent() {
-  return getAllContent().filter((c) => c.frontmatter.featured);
-}
+export function getFeaturedDecks()   { return getAllDecks().filter((d) => d.frontmatter.featured); }
+export function getFeaturedPosts()   { return getAllPosts().filter((p) => p.frontmatter.featured); }
+export function getFeaturedContent() { return getAllContent().filter((c) => c.frontmatter.featured); }
 
 export function readDeckTxt(slug) {
   const filePath = path.join(DATA_DIR, 'decks', slug, 'deck.txt');
