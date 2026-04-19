@@ -9,7 +9,7 @@ import { enrichWithScryfallImages } from '@/lib/scryfall';
 import DecklistViewer from '@/components/deck/DecklistViewer';
 import TagBadge from '@/components/ui/TagBadge';
 
-export const revalidate = 3600;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   return getAllDecks().map((d) => ({ slug: d.slug }));

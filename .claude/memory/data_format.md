@@ -41,19 +41,40 @@ tags:                     # required
 commander: "Name"         # optional — EDH only
 moxfieldUrl: "https://moxfield.com/decks/aBcDeF"  # optional — ID is derived from this
 image: "./assets/cover.jpg"  # optional — or Scryfall URL
-publishedAt: "2025-01-15" # required — ISO date, used for sort order
+publishedOn: "2025-01-15" # required — ISO date, used for sort order
 updatedAt: "2025-03-01"   # optional
+published: false          # optional — omit or set true to publish; false hides from all listings
 featured: true            # optional — appears in hero carousel and homepage
 ```
-Markdown body below frontmatter renders as "About This Deck" on the detail page.
+The markdown body uses a standard section template:
+
+```markdown
+## Overview
+(deck summary)
+
+## Win Conditions
+(how the deck wins)
+
+## Pilot Notes
+### Note 1
+(tips, each note is an H3 subsection)
+
+## Cards to Watch
+(standout cards, free-form)
+
+## Updates
+### {Month Day, Year} | {Title}
+(changelog entries, newest first, each update is an H3 with date and title)
+```
 
 ## Blog post frontmatter — `src/data/blog/{slug}/index.md`
 ```yaml
 title: "string"           # required
 description: "string"     # required
 author: "string"          # optional
-publishedAt: "2025-03-01" # required
+publishedOn: "2025-03-01" # required
 updatedAt: "2025-03-10"   # optional
+published: false          # optional — omit or true to publish; false hides from all listings
 tags:                     # required
   - strategy
 coverImage: "./assets/cover.jpg"  # optional — or external URL
@@ -69,7 +90,8 @@ youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"  # required — ID and
 relatedDeckSlug: "deck-slug"     # optional — links to /decks/{slug}
 tags:                     # required
   - deck-tech
-publishedAt: "2025-02-10" # required
+publishedOn: "2025-02-10" # required
+published: false          # optional — omit or true to publish; false hides from all listings
 featured: true            # optional
 ```
 `markdown.js` extracts `youtubeId` from the `?v=` query param and synthesizes `thumbnail` as `https://img.youtube.com/vi/{id}/maxresdefault.jpg` — no need to specify either in the file.

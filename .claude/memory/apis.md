@@ -15,7 +15,7 @@ Unofficial API — no public documentation, no auth required for public decks.
 
 **CORS:** Not an issue — fetch runs server-side in Next.js Server Components. Browser never touches `api2.moxfield.com`. A browser User-Agent and Referer header are sent to pass Moxfield's bot filter.
 
-**Caching:** Next.js `fetch` with `next: { revalidate: 3600 }` — Moxfield data refreshes at most once per hour per deck. Deck detail pages also have `export const revalidate = 3600` (ISR).
+**Caching:** Moxfield is called once at build time (`next build` statically renders every deck page). All pages are fully static — no runtime revalidation. Deck data refreshes on the next deploy.
 
 **Graceful degradation:** The deck detail page wraps the Moxfield fetch in try/catch. If it fails, `decklist` and `moxfield` are null and the page falls back to `deck.txt`, or links to Moxfield if no local file exists.
 

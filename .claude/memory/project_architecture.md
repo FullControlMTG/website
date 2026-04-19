@@ -6,7 +6,9 @@ type: project
 
 Next.js 15 (App Router) + React 19 + Tailwind CSS v4. Server-rendered, Docker deployed. No separate backend.
 
-**Why Next.js:** Replaced Vite+React Router SPA to enable server-side Moxfield API calls (CORS bypass) and ISR caching of deck pages.
+**Why Next.js:** Replaced Vite+React Router SPA to enable server-side Moxfield API calls (CORS bypass) and build-time static generation of deck pages.
+
+**Rendering model:** Fully static. Every page is generated once at `next build` (Moxfield + Scryfall calls happen during the build), then served as static HTML until the next deploy. No `revalidate` — content refreshes only when the site is rebuilt. Slug routes use `dynamicParams: false` so any unknown slug returns 404 without runtime rendering. Markdown files with `published: false` are filtered out in `lib/markdown.js#readPublished` and never reach `generateStaticParams`, so their pages aren't built at all.
 
 ## Stack decisions
 - **Next.js App Router** — Server Components by default; client components marked with `'use client'`
@@ -36,7 +38,7 @@ src/
                           HeroCarousel ('use client')
                           DeckGallery, BlogGallery, ContentGallery ('use client' — search/filter)
                           MarkdownContent ('use client' — renders HTML with card hover previews)
-    deck/                 CardStack ('use client'), DeckSpread ('use client'), DecklistViewer (server)
+    deck/                 CardStack ('use client'), DeckSpread ('use client'), DecklistViewer (server), CardFace (shared image/fallback renderer)
   data/
     decks/{slug}/         index.md + optional deck.txt + (assets in public/data/...)
     blog/{slug}/          index.md
@@ -58,7 +60,7 @@ public/
 ```
 /                   Landing
 /decks              Deck gallery
-/decks/:slug        Deck detail (ISR, revalidate 1h)
+/decks/:slug        Deck detail (static, built once per deploy)
 /blog               Blog gallery
 /blog/:slug         Blog post
 /content            Video gallery

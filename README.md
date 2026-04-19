@@ -4,7 +4,7 @@ The official website for FullControlMTG — decklists, gameplay content, and str
 
 ## Stack
 
-- **Next.js 15** — App Router, Server Components, ISR
+- **Next.js 15** — App Router, Server Components, fully static build (no runtime revalidation)
 - **React 19** — UI
 - **Tailwind CSS v4** — styling via `@tailwindcss/postcss` (no `tailwind.config.js`; custom tokens in `src/app/globals.css` under `@theme`)
 - **js-yaml** — YAML frontmatter parsing
@@ -191,7 +191,7 @@ If a card is missing from the cache at runtime, `enrichWithScryfallImages` resol
 
 ## Moxfield Integration
 
-The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side. Because this runs on the Next.js server, there are no CORS restrictions. Moxfield data is cached for 1 hour via ISR (`revalidate = 3600`). The page renders fully from local markdown if the fetch fails — falling back to `deck.txt` if one exists, or a link to Moxfield otherwise.
+The deck detail page fetches live data (card count, views, likes, full decklist) from the unofficial Moxfield API server-side at build time. Because this runs during `next build` on the Next.js server, there are no CORS restrictions. Data is baked into the static HTML and only refreshes on the next deploy. The page renders fully from local markdown if the fetch fails — falling back to `deck.txt` if one exists, or a link to Moxfield otherwise.
 
 ## Theme
 

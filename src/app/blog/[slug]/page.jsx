@@ -5,6 +5,8 @@ import { parseMarkdown } from '@/lib/parseMarkdown';
 import MarkdownContent from '@/components/ui/MarkdownContent';
 import TagBadge from '@/components/ui/TagBadge';
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
 }
