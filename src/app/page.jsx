@@ -2,8 +2,6 @@ import Link from 'next/link';
 import HeroCarousel from '@/components/ui/HeroCarousel';
 import { getFeaturedDecks, getFeaturedContent, getFeaturedPosts } from '@/lib/markdown';
 
-export const revalidate = 3600;
-
 export default function Landing() {
   const featuredDecks = getFeaturedDecks();
   const featuredContent = getFeaturedContent();

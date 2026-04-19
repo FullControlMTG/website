@@ -1,7 +1,6 @@
 import { getAllContent } from '@/lib/markdown';
 import ContentGallery from '@/components/ui/ContentGallery';
 
-export const revalidate = 3600;
 export const metadata = { title: 'Content — FullControlMTG' };
 
 export default function ContentPage() {
