@@ -1,25 +1,22 @@
-About
-Name Angel Tribal
-
 Deck
-1 Ajani, Strength of the Pride
-4 Bishop of Wings
-4 Chrome Mox
-4 Collected Company
-4 Giada, Font of Hope
-4 Once Upon a Time
-4 Resplendent Angel
-4 Righteous Valkyrie
-1 Serra Paragon
-4 Speaker of the Heavens
-4 Swords to Plowshares
-1 The Book of Exalted Deeds
-4 Three Tree Battalion
-4 Cavern of Souls
-1 Eiganjo, Seat of the Empire
-1 Forest
-2 Lush Portico
-1 Mutavault
-4 Plains
-2 Temple Garden
-2 Windswept Heath
+1 Ajani, Strength of the Pride (M20) 2
+4 Bishop of Wings (M20) 8
+1 Enlightened Tutor (TLE) 305
+4 Collected Company (AKR) 186
+4 Giada, Font of Hope (SNC) 14
+3 Path to Exile (OTP) 6
+2 Dawn of Hope (WOT) 2
+4 Resplendent Angel (LCI) 32
+4 Righteous Valkyrie (KHM) 24
+1 Serra Paragon (DMU) 32
+4 Speaker of the Heavens (M21) 38
+2 Rest in Peace (BIG) 4
+1 The Book of Exalted Deeds (AFR) 4
+4 Three Tree Battalion (Y25) 4
+4 Union of the Third Path (BRO) 31
+4 Cavern of Souls (LCI) 269
+1 Eiganjo, Seat of the Empire (NEO) 268
+3 Forest (MID) 276
+1 Mutavault (M14) 228
+4 Plains (MID) 268
+4 Temple Garden (GRN) 258
