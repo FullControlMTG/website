@@ -29,10 +29,10 @@ Island-finding fetchlands are incredibly relevant for this deck, as [[Hydroponic
 
 ## Updates
 ### May 7, 2026 | Embracing Low Land Counts
-Lands are important to our deck, but the most important is being able to search out our [[Hydroponics Architect]] lands. It is often possible to string together multiple draws by fetching a modified fetchland that continues the chain until finding the last card-drawing land. Sometimes this is enough for 3-4 cards at instant speed if we have multiple architects. We drop the only non-island producing source for a [[Flooded Strand]].
+Lands are important to our deck, but the most important is being able to search out our [[Hydroponics Architect]] lands. It is often possible to string together multiple draws by fetching a modified fetchland that continues the chain until finding the last card-drawing land. Sometimes this is enough for 3-4 cards at instant speed if we have multiple architects. We drop the only non-island producing source for a [[Flooded Strand]]. We know we will play a match that is strapped for resources, and that our card draw can bridge us to making our next land drops, so having a low land count is servicable.
 
 IN:
-- 2 [[Mountain]]
+- 1 [[Flooded Strand]]
 
 OUT: 
-- 4 [[Flooded Strand]]
+- 1 [[Mountain]]
