@@ -1,0 +1,35 @@
+Companion
+1 Lurrus of the Dream-Den (MUL) 116
+
+Deck
+4 Hydroponics Architect (Y25) 6
+4 Dragon's Rage Channeler (MH2) 121
+4 Ragavan, Nimble Pilferer (MUL) 86
+4 Mishra's Bauble (BRR) 34
+3 Cori-Steel Cutter (TDM) 103
+4 Brainstorm (STA) 13
+4 Lightning Bolt (STA) 42
+4 Daze (SOA) 15
+4 Force of Will (SOA) 19
+4 Ponder (OMB) 13
+3 Treasure Cruise (KTK) 59
+1 Island (UST) 213
+4 Steam Vents (GRN) 257
+4 Strip Mine (EOS) 40
+2 Polluted Delta (MH3) 224
+2 Thundering Falls (MKM) 269
+4 Scalding Tarn (MH2) 254
+1 Flooded Strand (MH3) 220
+
+Sideboard
+2 Fire Magic (FIN) 136
+1 Grafdigger's Cage (M20) 227
+1 Meltdown (MH3) 282
+2 Surgical Extraction (OTP) 19
+2 Unholy Heat (SPG) 71
+1 Damping Sphere (DAR) 213
+1 Blood Moon (WOT) 40
+1 Faerie Macabre (SHM) 66
+2 Force of Negation (TLE) 13
+1 Pyrokinesis (DDL) 32
+1 Lurrus of the Dream-Den (MUL) 116
