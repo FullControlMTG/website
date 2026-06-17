@@ -29,7 +29,9 @@
       "WebFetch(domain:scryfall.com)",
       "WebSearch",
       "Bash(git diff:*)",
-      "Bash(perl -i -pe 's/\\\\bpublishedAt\\\\b/publishedOn/g' \"c:/Users/runya/.claude/projects/c--Users-runya-Documents-repositories-fullcontrolmtg-website/memory/data_format.md\" \"c:/Users/runya/Documents/repositories/fullcontrolmtg-website/README.md\")"
+      "Bash(perl -i -pe 's/\\\\bpublishedAt\\\\b/publishedOn/g' \"c:/Users/runya/.claude/projects/c--Users-runya-Documents-repositories-fullcontrolmtg-website/memory/data_format.md\" \"c:/Users/runya/Documents/repositories/fullcontrolmtg-website/README.md\")",
+      "Bash(docker --version)",
+      "Read(//c/Users/runya/Documents/repositories/applications/**)"
     ]
   }
 }
