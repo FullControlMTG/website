@@ -2,8 +2,10 @@ pipeline {
   agent any
 
   environment {
-    COMPOSE_FILE = 'docker-compose.yml'
-    SERVICE      = 'website'
+    COMPOSE_FILE    = 'docker-compose.yml'
+    SERVICE         = 'website'
+    CONTAINER       = 'fullcontrolmtg-website'
+    DISCORD_WEBHOOK = credentials('discord-pws-builds-channel-webhook')
   }
 
   options {
@@ -31,7 +33,14 @@ pipeline {
 
     stage('Teardown') {
       steps {
-        sh 'docker compose -f "$COMPOSE_FILE" down --remove-orphans'
+        sh '''
+          set -eu
+          docker compose -f "$COMPOSE_FILE" down --remove-orphans || true
+          # compose down only removes containers it still tracks; a lingering
+          # container with our fixed name causes a "name already in use" conflict
+          # on up, so force-remove it by name.
+          docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+        '''
       }
     }
 
@@ -88,13 +97,39 @@ pipeline {
 
   post {
     always {
-      discordSend(
-        webhookURL: 'https://discordapp.com/api/webhooks/1516612903271403692/bDRkplqAkHvTBfjlmCeURNLTJNOWhorDMZIjXypzlQj9UlsgKtyv695g6zJdNXu-0Wr1',
-        title: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-        link: env.BUILD_URL,
-        result: currentBuild.currentResult,
-        description: "Jenkins Build Status: **${currentBuild.currentResult}**"
-      )
+      script {
+        // 1. Gather the commits included in this build
+        def changeLog = "No recent changes detected."
+        def commits = currentBuild.changeSets.collectMany { it.items as List }
+        if (commits.size() > 0) {
+          changeLog = commits.collect { "> ${it.msg} (by *${it.author.displayName}*)" }.join('\n')
+        }
+
+        // 2. Pick a status colour: green = success, red = failure, yellow = anything else
+        def statusEmoji = [
+            'SUCCESS': ':green_circle:',
+            'FAILURE': ':red_circle:'
+        ].getOrDefault(currentBuild.currentResult, ':yellow_circle:')
+
+        // 3. Construct a rich markdown description
+        def discordDescription = """
+        **Status:** ${statusEmoji} ${currentBuild.currentResult}
+        **Branch:** `${env.BRANCH_NAME ?: 'Main/Manual'}`
+        **Duration:** :stopwatch: ${currentBuild.durationString.replace(' and no weeks', '').replace(' and counting', '')}
+
+        **Commits:**
+        ${changeLog}
+        """.stripIndent()
+
+        // 4. Send it off
+        discordSend(
+            webhookURL: env.DISCORD_WEBHOOK,
+            title: "📦 Build Alert: ${env.JOB_NAME} [Build #${env.BUILD_NUMBER}]",
+            link: "${env.BUILD_URL}",
+            result: "${currentBuild.currentResult}",
+            description: discordDescription
+        )
+      }
     }
 
     failure {
