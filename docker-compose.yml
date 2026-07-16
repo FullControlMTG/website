@@ -13,7 +13,9 @@ services:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fullcontrolmtg.rule=Host(`fullcontrolmtg.com`)"
+      - "traefik.http.routers.fullcontrolmtg.rule=Host(`fullcontrolmtg.com`) || Host(`fullcontrolmtg.com`)"
+      - "traefik.http.routers.fullcontrolmtg.tls.domains[0].main=fullcontrolmtg.com"
+      - "traefik.http.routers.fullcontrolmtg.tls.domains[0].sans=www.fullcontrolmtg.com"
       - "traefik.http.routers.fullcontrolmtg.entrypoints=websecure"
       - "traefik.http.routers.fullcontrolmtg.tls=true"
       - "traefik.http.routers.fullcontrolmtg.tls.certresolver=lets-encrypt"

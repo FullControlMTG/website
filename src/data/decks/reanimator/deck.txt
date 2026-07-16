@@ -1,0 +1,33 @@
+Deck
+1 Raph & Mikey, Troublemakers (TMT) 167
+1 Worldspine Wurm (RTR) 140
+4 Chrome Mox (SPG) 0
+3 Brainstorm (STA) 13
+4 Dark Ritual (STA) 26
+4 Daze (SOA) 15
+4 Entomb (TLE) 310
+4 Force of Will (SOA) 19
+4 Mystical Tutor (TLE) 308
+4 Pact of Negation (AKR) 73
+1 Vampiric Tutor (SOA) 35
+3 Ponder (MAR) 13
+4 Reanimate (OTP) 18
+2 Life // Death (DMR) 216
+1 Demonic Tutor (STA) 27
+1 Show and Tell (SPG) 21
+4 Watery Grave (GRN) 259
+3 Polluted Delta (MH3) 224
+2 Bloodstained Mire (MH3) 216
+2 Marsh Flats (MH2) 248
+2 Verdant Catacombs (MH2) 260
+1 Swamp (UST) 214
+1 Consign to Memory (MH3) 54
+
+Sideboard
+4 Leyline of Sanctity (WOT) 10
+2 Library of Alexandria (SPG) 0
+2 Ancient Tomb (EOS) 1
+2 Emrakul, the Aeons Torn (ROE) 4
+2 Into the Flood Maw (BLB) 52
+2 Show and Tell (SPG) 21
+1 Atraxa, Grand Unifier (ONE) 196
