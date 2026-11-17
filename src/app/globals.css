@@ -45,3 +45,17 @@ h1, h2, h3 {
   font-family: var(--font-family-display);
   letter-spacing: -0.01em;
 }
+
+@keyframes heroFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-"] { animation: none !important; }
+}

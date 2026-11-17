@@ -12,16 +12,15 @@ type: project
 - **Link color (`#4ecdc4`)** — muted teal, distinct from the sky-blue header color. Used for prose links and `[[Card Name]]` references. CTAs/buttons keep the red accent (`#e94560`).
 
 ## Landing page layout
-Intentionally non-uniform — "parallax inspired stack" aesthetic:
-1. **Hero carousel** — full-width, 500px tall, auto-rotates every 6s
-2. **Bento hub** — asymmetric 3-col × 2-row CSS grid. Decklists: 2-col wide, pulls its background from the first featured deck's `image`. Blog: spans both rows on the right. Content + Products: two shorter bottom-left cells.
-3. **Featured deck panel** — full-bleed cinematic strip, art as background with layered gradients. No card border.
-4. **Content strip** — horizontal scroll with `scroll-snap`, `w-72` cards, trailing "see all" ghost card
-5. **Blog editorial** — lead post 3/5 wide, secondary posts stacked in 2/5
+Uniform, stacked sections that reflow cleanly at any width (the old asymmetric bento grid with fixed row heights was dropped — it broke on mobile and odd aspect ratios):
+1. **Hero carousel** — full-width, `min(75svh, 620px)` tall (min 440px). Text bottom-aligned on mobile, centred on `md+`. Swipe on touch, arrows on `md+`, pauses on hover, timer resets on any navigation. Only the active slide's background is rendered (deck images are ~3MB each).
+2. **Intro + explore tiles** — tagline plus three equal tiles (Decklists / Videos / Blog) with live counts; blurbs hidden on mobile so tiles stay a compact 3-up row.
+3. **Latest Decks / Latest Videos / From the Blog** — reuse `DeckCard` / `VideoCard` / `BlogCard`. `CardRow` (local to `page.jsx`) is a horizontal snap-scroll strip on mobile and a grid from `sm` up (decks 2→4 cols, videos/blog 3 cols).
+4. **About / Support CTA band** — closing panel.
 
 ## Component conventions
 - `DeckCard` / `BlogCard` / `VideoCard` — gallery card components, consistent hover lift + border glow
-- `HeroCarousel` — self-contained with auto-advance interval; cleans up on unmount; handles internal (`next/link`) and external (`<a target="_blank">`) CTAs
+- `HeroCarousel` — self-contained with auto-advance timeout (re-armed per slide); cleans up on unmount; handles internal (`next/link`) and external (`<a target="_blank">`) CTAs
 - Gallery pages (Decks, Blog, Content) pass data from server page → client gallery component (`DeckGallery`, `BlogGallery`, `ContentGallery`) which handles search + tag filter state
 - `DeckDetail` fetches Moxfield first; on failure falls back to `deck.txt`; gracefully degrades to a Moxfield link if neither is available
 - `CardStack` — renders N cards stacked vertically with 85% overlap via `clip-path inset`. Clip values are runtime-computed (JS, not CSS) because they reference CSS custom properties set by `DeckSpread`. Each card is an `<a>` linking to Scryfall. Hover expands the card to full height.
